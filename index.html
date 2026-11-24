@@ -3,34 +3,34 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#04070f" />
-<title>Bava，2026 圣诞快乐 · Los Angeles × Disneyland</title>
+<meta name="theme-color" content="#03060c" />
+<title>Bava，2026 圣诞快乐 · Hollywood × Disneyland</title>
 <style>
-  :root{ --gold:#ffcf7a; --gold-soft:rgba(255,207,122,.35); --ink:#f6f9ff; --dim:#9fb2cd; }
+  :root{ --gold:#ffd08a; --gold-soft:rgba(255,208,138,.35); --ink:#f7faff; --dim:#9fb2cd; }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:#04070f;overflow:hidden}
+  html,body{height:100%;margin:0;background:#03060c;overflow:hidden}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
     color:var(--ink);-webkit-tap-highlight-color:transparent;user-select:none;
   }
   #scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
   .vignette{position:fixed;inset:0;pointer-events:none;
-    background:radial-gradient(120% 90% at 50% 46%, transparent 52%, rgba(0,0,0,.62) 100%);}
+    background:radial-gradient(120% 92% at 50% 44%, transparent 50%, rgba(0,0,0,.66) 100%);}
   .hud{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between}
-  .top{padding:clamp(18px,4.6vh,44px) 16px 0;text-align:center}
+  .top{padding:clamp(16px,4.4vh,42px) 16px 0;text-align:center}
   .top h1{
-    margin:0;font-weight:600;letter-spacing:.12em;
+    margin:0;font-weight:600;letter-spacing:.11em;
     font-size:clamp(17px,3.1vw,33px);
     text-shadow:0 0 20px var(--gold-soft),0 0 60px rgba(255,255,255,.10);
   }
-  .top .sub{margin-top:.85em;font-size:clamp(9px,1.15vw,12px);letter-spacing:.4em;color:var(--dim);text-transform:uppercase}
+  .top .sub{margin-top:.85em;font-size:clamp(9px,1.15vw,12px);letter-spacing:.38em;color:var(--dim);text-transform:uppercase}
   .top .line{margin:10px auto 0;width:min(320px,52vw);height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,207,122,.55),transparent)}
-  .bottom{padding:0 16px clamp(16px,4vh,36px);text-align:center}
+    background:linear-gradient(90deg,transparent,rgba(255,208,138,.55),transparent)}
+  .bottom{padding:0 16px clamp(16px,4vh,34px);text-align:center}
   .tip{font-size:clamp(11px,1.5vw,13px);color:#b3c3da;letter-spacing:.08em}
   .tip b{color:var(--gold);font-weight:600}
-  .brand{margin-top:8px;font-size:clamp(9px,1.05vw,11px);letter-spacing:.28em;color:#5d6f8c;text-transform:uppercase}
-  @media (max-width:520px){ .top h1{letter-spacing:.05em} .top .sub{letter-spacing:.26em} }
+  .brand{margin-top:8px;font-size:clamp(9px,1.05vw,11px);letter-spacing:.26em;color:#5d6f8c;text-transform:uppercase}
+  @media (max-width:520px){ .top h1{letter-spacing:.04em} .top .sub{letter-spacing:.24em} }
 </style>
 </head>
 <body>
@@ -40,12 +40,12 @@
 <div class="hud">
   <div class="top">
     <h1>Bava 祝你 2026 圣诞节快乐</h1>
-    <div class="sub">Los Angeles &nbsp;·&nbsp; Disneyland</div>
+    <div class="sub">Hollywood &nbsp;·&nbsp; Los Angeles &nbsp;·&nbsp; Disneyland</div>
     <div class="line"></div>
   </div>
   <div class="bottom">
-    <div class="tip" id="tip">点击任意位置，让这棵<b>树绽放</b></div>
-    <div class="brand">Christmas Tree &nbsp;·&nbsp; L.A. Edition v19</div>
+    <div class="tip" id="tip">点击这棵树，让它<b>绽放</b>，再从天而降拼合</div>
+    <div class="brand">Rockefeller Style &nbsp;·&nbsp; L.A. Edition v20</div>
   </div>
 </div>
 
@@ -60,12 +60,27 @@
   var cx = 0, apexY = 0, baseY = 0, baseR = 0, treeH = 0;
   var portrait = false;
 
-  var LIGHT_COLORS = [
-    [255,214,148],
-    [255,246,224],
-    [255,158,120],
-    [116,214,255]
-  ];
+  /* ---------- 灯光精灵 ---------- */
+  function glowSprite(rgb){
+    var c = document.createElement("canvas");
+    c.width = c.height = 64;
+    var g = c.getContext("2d");
+    var grd = g.createRadialGradient(32,32,0,32,32,32);
+    grd.addColorStop(0, "rgba(255,255,255,1)");
+    grd.addColorStop(0.22, "rgba(" + rgb + ",0.92)");
+    grd.addColorStop(0.55, "rgba(" + rgb + ",0.35)");
+    grd.addColorStop(1, "rgba(" + rgb + ",0)");
+    g.fillStyle = grd;
+    g.beginPath(); g.arc(32,32,32,0,Math.PI*2); g.fill();
+    return c;
+  }
+  var SPR = {
+    gold:  glowSprite("255,198,120"),
+    warm:  glowSprite("255,238,205"),
+    red:   glowSprite("255,110,100"),
+    blue:  glowSprite("150,198,255"),
+    green: glowSprite("120,240,180")
+  };
 
   /* ---------- 布局 ---------- */
   function layout(){
@@ -75,49 +90,88 @@
     ctx.setTransform(DPR,0,0,DPR,0,0);
 
     portrait = H > W * 1.15;
-    treeH = Math.min(H * (portrait ? 0.50 : 0.58), W * (portrait ? 0.95 : 0.92));
-    baseY = H * (portrait ? 0.775 : 0.83);
+    treeH = Math.min(H * (portrait ? 0.52 : 0.61), W * (portrait ? 0.92 : 0.86));
+    baseY = H * (portrait ? 0.785 : 0.845);
     apexY = baseY - treeH;
-    baseR = Math.min(W * (portrait ? 0.40 : 0.28), treeH * (portrait ? 0.60 : 0.48));
+    baseR = Math.min(W * (portrait ? 0.38 : 0.255), treeH * (portrait ? 0.62 : 0.47));
     cx = W * 0.5;
 
     buildTree(); buildSky();
+    startGather(performance.now(), 1600);
   }
 
-  /* ---------- 树 ---------- */
-  var tree = [], garland = [];
+  /* ---------- 树（洛克菲勒式：圆锥 + 分层枝叶 + 暖灯） ---------- */
+  var foliage = [], lights = [], strand = [];
+  var TIERS = 11;
+
+  function tierRipple(t){
+    // 分层感：每层下缘略微外扩
+    var ph = t * Math.PI * TIERS;
+    return 1 + 0.055 * Math.sin(ph) + 0.02 * Math.sin(ph * 2.3);
+  }
+
   function buildTree(){
-    tree.length = 0; garland.length = 0;
-    var N = Math.round(Math.min(4600, Math.max(1600, W * H / 300)));
-    for (var i=0;i<N;i++){
-      var t = Math.pow(Math.random(), 0.55);
+    foliage.length = 0; lights.length = 0; strand.length = 0;
+
+    var NF = Math.round(Math.min(9200, Math.max(3000, W * H / 135)));
+    for (var i=0;i<NF;i++){
+      var t = Math.pow(Math.random(), 0.58);
       var y = baseY - t * treeH;
-      var r = baseR * (1 - t);
+      var r = baseR * (1 - t) * tierRipple(t);
       var ang = Math.random() * Math.PI * 2;
-      var rr = r * (0.50 + Math.random() * 0.50);
-      var depth = Math.cos(ang);
-      tree.push({
+      var rr = r * (0.50 + 0.50 * Math.pow(Math.random(), 0.7));
+      var depth = Math.cos(ang);                 // 1 = 前
+      var shade = 0.5 + 0.5 * depth;
+      foliage.push({
         bx: cx + Math.sin(ang) * rr,
-        by: y + (Math.random() - 0.5) * 7,
-        z: 0.45 + 0.55 * (0.5 + 0.5 * depth),
-        s: 0.6 + Math.random() * 1.4,
+        by: y + (Math.random() - 0.5) * 8,
+        z: shade,
+        s: (0.6 + Math.random() * 1.5) * (0.55 + 0.45 * shade),
         ph: Math.random() * Math.PI * 2,
-        sp: 0.5 + Math.random() * 1.3,
-        light: Math.random() < 0.18,
-        col: LIGHT_COLORS[(Math.random() * LIGHT_COLORS.length) | 0],
-        vx: 1, vy: 1, spd: 0, delay: 0
+        t: t,
+        col: [
+          14 + Math.round(26 * shade),
+          46 + Math.round(68 * shade),
+          32 + Math.round(44 * shade)
+        ],
+        snow: Math.random() < 0.05
       });
     }
-    var turns = 7, per = 44;
-    for (var g=0; g<turns*per; g++){
-      var tg = g / (turns*per);
-      var angG = tg * turns * Math.PI * 2;
-      var rG = baseR * (1 - tg) * 0.99;
-      garland.push({
-        bx: cx + Math.sin(angG) * rG,
-        by: baseY - tg * treeH,
+
+    // 暖灯：金 / 暖白 / 少量红蓝
+    var NL = Math.round(Math.min(300, Math.max(150, W * H / 6500)));
+    for (var j=0;j<NL;j++){
+      var tl = Math.pow(Math.random(), 0.75);
+      var yl = baseY - tl * treeH;
+      var rl = baseR * (1 - tl) * tierRipple(tl);
+      var al = Math.random() * Math.PI * 2;
+      var rrh = rl * (0.88 + Math.random() * 0.14);
+      var kindRoll = Math.random();
+      var kind = kindRoll < 0.55 ? "gold" : kindRoll < 0.87 ? "warm" : kindRoll < 0.95 ? "red" : "blue";
+      lights.push({
+        bx: cx + Math.sin(al) * rrh,
+        by: yl + (Math.random() - 0.5) * 6,
+        r: (1.7 + Math.random() * 1.8),
+        kind: kind,
         ph: Math.random() * Math.PI * 2,
-        vx: 1, vy: 1, spd: 0, delay: 0
+        sp: 0.8 + Math.random() * 1.6,
+        t: tl
+      });
+    }
+
+    // 一条螺旋灯串（沿树体盘绕）
+    var turns = 9, per = 40;
+    for (var k=0; k<turns*per; k++){
+      var tk = k / (turns*per);
+      var ak = tk * turns * Math.PI * 2;
+      var rk = baseR * (1 - tk) * 1.0;
+      strand.push({
+        bx: cx + Math.sin(ak) * rk,
+        by: baseY - tk * treeH,
+        r: 2.6,
+        ph: Math.random() * Math.PI * 2,
+        sp: 1.2 + Math.random() * 1.2,
+        t: tk
       });
     }
   }
@@ -126,16 +180,58 @@
   var stars = [];
   function buildSky(){
     stars.length = 0;
-    var n = Math.round(W * H / 11000);
+    var n = Math.round(W * H / 12000);
     for (var i=0;i<n;i++){
       stars.push({
         x: Math.random() * W,
-        y: Math.random() * H * (portrait ? 0.55 : 0.62),
-        r: Math.random() * 1.25 + 0.25,
+        y: Math.random() * H * (portrait ? 0.52 : 0.6),
+        r: Math.random() * 1.2 + 0.25,
         ph: Math.random() * Math.PI * 2,
         sp: 0.5 + Math.random() * 1.4
       });
     }
+  }
+
+  /* ---------- 状态机：gather（从天而降拼合）/ idle / bloom ---------- */
+  var phase = "gather", phaseT0 = 0, gatherDur = 1500;
+  var bloomT0 = 0, BLOOM_OUT = 720, BLOOM_END = 1500;
+
+  function startGather(now, dur){
+    phase = "gather"; phaseT0 = now; gatherDur = dur || 1500;
+  }
+
+  function bloom(now){
+    phase = "bloom"; bloomT0 = now;
+    for (var i=0;i<foliage.length;i++){
+      var p = foliage[i];
+      var dx = p.bx - cx, dy = p.by - (apexY + treeH * 0.42);
+      var len = Math.max(1, Math.sqrt(dx*dx + dy*dy));
+      var spd = 120 + Math.random() * 320;
+      p.bvx = dx / len; p.bvy = dy / len - 0.28;
+      p.bspd = spd;
+    }
+    for (var j=0;j<lights.length;j++){
+      var l = lights[j];
+      var lx = l.bx - cx, ly = l.by - (apexY + treeH * 0.42);
+      var ll = Math.max(1, Math.sqrt(lx*lx + ly*ly));
+      l.bvx = lx / ll; l.bvy = ly / ll - 0.3;
+      l.bspd = 140 + Math.random() * 340;
+    }
+    for (var s=0;s<strand.length;s++){
+      var q = strand[s];
+      var qx = q.bx - cx, qy = q.by - (apexY + treeH * 0.42);
+      var ql = Math.max(1, Math.sqrt(qx*qx + qy*qy));
+      q.bvx = qx / ql; q.bvy = qy / ql - 0.3;
+      q.bspd = 150 + Math.random() * 330;
+    }
+    var n = W < 600 ? 3 : 5;
+    for (var b=0;b<n;b++){
+      var ang = -Math.PI*0.5 + (Math.random()-0.5) * 2.4;
+      var dist = Math.min(W,H) * (0.16 + Math.random()*0.3);
+      burst(cx + Math.cos(ang)*dist, (apexY+baseY)/2 + Math.sin(ang)*dist*0.5,
+            W < 600 ? 26 : 42, b % 2 ? [255,232,196] : [255,198,130]);
+    }
+    tipEl.innerHTML = "绽放中 · 稍后从天而降拼合";
   }
 
   /* ---------- 烟花 ---------- */
@@ -146,127 +242,192 @@
       var v = 90 + Math.random() * 230;
       sparks.push({
         x: ox, y: oy,
-        vx: Math.cos(a) * v, vy: Math.sin(a) * v - 30,
-        life: 1, decay: 0.55 + Math.random() * 0.6,
+        vx: Math.cos(a)*v, vy: Math.sin(a)*v - 30,
+        life: 1, decay: 0.55 + Math.random()*0.6,
         col: col || (Math.random() < 0.5 ? [255,212,140] : [255,244,220]),
-        size: 1 + Math.random() * 2.1
+        size: 1 + Math.random()*2.1
       });
     }
   }
 
-  /* ---------- 绽放 ---------- */
-  var bloomT0 = -9999, blooming = false;
-  var BLOOM_DUR = 2400;
+  function easeOutCubic(t){ t = Math.min(1, Math.max(0,t)); return 1 - Math.pow(1-t,3); }
+  function easeInOut(t){ t = Math.min(1, Math.max(0,t)); return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; }
 
-  function bloom(){
-    bloomT0 = performance.now();
-    blooming = true;
-    var oy = apexY + treeH * 0.42;
-    for (var i=0;i<tree.length;i++){
-      var p = tree[i];
-      var dx = p.bx - cx, dy = p.by - oy;
-      var len = Math.max(1, Math.sqrt(dx*dx + dy*dy));
-      p.spd = 150 + Math.random() * 330;
-      p.vx = dx / len; p.vy = dy / len - 0.22;
-      p.delay = Math.random() * 260;
-    }
-    for (var g=0;g<garland.length;g++){
-      var q = garland[g];
-      var qx = q.bx - cx, qy = q.by - oy;
-      var ql = Math.max(1, Math.sqrt(qx*qx + qy*qy));
-      q.spd = 180 + Math.random() * 320;
-      q.vx = qx / ql; q.vy = qy / ql - 0.3;
-      q.delay = Math.random() * 220;
-    }
-    var n = W < 600 ? 3 : 5;
-    for (var k=0;k<n;k++){
-      var ang = -Math.PI * 0.5 + (Math.random() - 0.5) * 2.4;
-      var dist = Math.min(W, H) * (0.18 + Math.random() * 0.28);
-      burst(cx + Math.cos(ang) * dist,
-            (apexY + baseY) / 2 + Math.sin(ang) * dist * 0.5,
-            W < 600 ? 24 : 40,
-            k % 2 ? [255,232,196] : [255,196,128]);
-    }
-    tipEl.innerHTML = "已绽放 · 再点一次继续";
-  }
-
-  function easeOut(t){ t = Math.min(1, Math.max(0, t)); return 1 - Math.pow(1 - t, 3); }
-  function easeInOut(t){ t = Math.min(1, Math.max(0, t)); return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; }
-
-  /* ---------- 场景 ---------- */
+  /* ---------- 场景元素 ---------- */
   function drawSky(time){
     var sky = ctx.createLinearGradient(0,0,0,H);
     sky.addColorStop(0, "#050a18");
-    sky.addColorStop(0.42, "#0a1024");
-    sky.addColorStop(0.66, "#1a1330");
-    sky.addColorStop(0.82, "#2a1730");
-    sky.addColorStop(1, "#080a12");
+    sky.addColorStop(0.40, "#0a1024");
+    sky.addColorStop(0.64, "#1b1330");
+    sky.addColorStop(0.82, "#2b1731");
+    sky.addColorStop(1, "#06080f");
     ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
 
     for (var i=0;i<stars.length;i++){
       var s = stars[i];
-      ctx.globalAlpha = 0.22 + 0.6 * (0.5 + 0.5 * Math.sin(time * s.sp + s.ph));
+      ctx.globalAlpha = 0.2 + 0.6 * (0.5 + 0.5*Math.sin(time*s.sp + s.ph));
       ctx.fillStyle = "#dcebff";
       ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
     }
     ctx.globalAlpha = 1;
 
-    var horizonY = baseY + 26;
-    var glow = ctx.createRadialGradient(cx, horizonY, 10, cx, horizonY, Math.max(W, H) * 0.7);
-    glow.addColorStop(0, "rgba(255,150,90,.16)");
-    glow.addColorStop(0.45, "rgba(180,90,140,.10)");
+    var hy = baseY + 24;
+    var glow = ctx.createRadialGradient(cx, hy, 8, cx, hy, Math.max(W,H)*0.72);
+    glow.addColorStop(0, "rgba(255,150,90,.15)");
+    glow.addColorStop(0.45, "rgba(170,90,150,.10)");
     glow.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
   }
 
+  // 好莱坞山 + HOLLYWOOD 招牌
+  function drawHills(){
+    var hy = baseY + 24;
+    var mw = W * 0.46;
+    var mh = Math.min(H * 0.20, mw * 0.34);
+    ctx.save();
+    ctx.fillStyle = "rgba(9,13,23,.94)";
+    ctx.beginPath();
+    ctx.moveTo(-20, hy);
+    ctx.bezierCurveTo(mw*0.16, hy - mh*1.15, mw*0.34, hy - mh*1.35, mw*0.52, hy - mh*0.55);
+    ctx.bezierCurveTo(mw*0.72, hy - mh*0.2, mw*0.9, hy - mh*0.05, mw+20, hy);
+    ctx.lineTo(mw+20, hy+20);
+    ctx.lineTo(-20, hy+20);
+    ctx.closePath();
+    ctx.fill();
+
+    // 第二重山，增加层次
+    ctx.fillStyle = "rgba(12,17,29,.9)";
+    ctx.beginPath();
+    ctx.moveTo(-20, hy);
+    ctx.bezierCurveTo(mw*0.1, hy - mh*0.55, mw*0.3, hy - mh*0.9, mw*0.62, hy - mh*0.35);
+    ctx.lineTo(mw*0.62, hy+20); ctx.lineTo(-20, hy+20);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // HOLLYWOOD 字母
+    var fs = Math.max(10, Math.min(24, W / 78));
+    var word = "HOLLYWOOD";
+    ctx.save();
+    ctx.font = "700 " + fs + "px Helvetica, Arial, sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    try { ctx.letterSpacing = (fs * 0.26) + "px"; } catch(e) {}
+    var tx = W * 0.055;
+    var ty = hy - mh * 0.52;
+    ctx.translate(tx, ty);
+    ctx.rotate(-0.035);
+    ctx.globalAlpha = 0.86;
+    ctx.fillStyle = "#eaf2ff";
+    ctx.fillText(word, 0, 0);
+    ctx.globalAlpha = 0.22;
+    ctx.fillStyle = "#8fc0ff";
+    ctx.fillText(word, 0, 1.4);
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+
+  // 米奇：三圆剪影 + 圣诞帽 + 微光
+  function drawMickey(x, y, r, time){
+    var lit = 0.55 + 0.25 * Math.sin(time * 1.6);
+    ctx.save();
+    ctx.translate(x, y);
+    // 光晕
+    var halo = ctx.createRadialGradient(0,0, r*0.2, 0,0, r*2.6);
+    halo.addColorStop(0, "rgba(255,206,140," + (0.10 * lit) + ")");
+    halo.addColorStop(1, "rgba(255,180,90,0)");
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(0,0, r*2.6, 0, Math.PI*2); ctx.fill();
+
+    // 头 + 耳（暖光实体）
+    var earR = r * 0.56;
+    var bodyGrad = ctx.createRadialGradient(0, r*0.1, r*0.1, 0, 0, r*1.5);
+    bodyGrad.addColorStop(0, "rgba(255,214,150,0.55)");
+    bodyGrad.addColorStop(0.55, "rgba(255,168,110,0.34)");
+    bodyGrad.addColorStop(1, "rgba(255,140,90,0.18)");
+    ctx.fillStyle = bodyGrad;
+    ctx.beginPath(); ctx.arc(-r*0.78, -r*0.80, earR, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc( r*0.78, -r*0.80, earR, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
+
+    // 金色描边
+    ctx.shadowColor = "rgba(255,205,140,.75)";
+    ctx.shadowBlur = r * 0.5;
+    ctx.strokeStyle = "rgba(255,214,160," + (0.85*lit) + ")";
+    ctx.lineWidth = Math.max(1.4, r*0.05);
+    ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc(-r*0.78,-r*0.80,earR,0,Math.PI*2); ctx.stroke();
+    ctx.beginPath(); ctx.arc( r*0.78,-r*0.80,earR,0,Math.PI*2); ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // 头里几颗星星
+    ctx.fillStyle = "rgba(255,240,210," + (0.5*lit) + ")";
+    [[-0.2,-0.1,1.6],[0.25,0.05,1.2],[0.0,0.35,1.4],[-0.1,-0.4,1.1]].forEach(function(st){
+      ctx.beginPath(); ctx.arc(st[0]*r, st[1]*r, st[2], 0, Math.PI*2); ctx.fill();
+    });
+
+    // 圣诞帽
+    ctx.fillStyle = "rgba(196,46,58,.92)";
+    ctx.beginPath();
+    ctx.moveTo(-r*0.55, -r*0.62);
+    ctx.quadraticCurveTo(-r*0.1, -r*1.32, r*0.52, -r*0.74);
+    ctx.quadraticCurveTo(0, -r*0.86, -r*0.55, -r*0.62);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "rgba(246,250,255,.94)";
+    ctx.beginPath();
+    ctx.ellipse(-r*0.03, -r*0.72, r*0.55, r*0.13, 0.16, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(r*0.56, -r*0.80, r*0.16, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+
+  // 天际线
   function drawSkyline(){
-    var y = baseY + 26;
-    var seed = 7;
+    var y = baseY + 24;
+    var seed = 11;
     function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
-    var x = -20;
-    ctx.fillStyle = "rgba(8,12,22,.92)";
+    var x = W * 0.34;
     while (x < W + 20){
-      var w = 16 + rnd() * 46;
-      var h = 26 + rnd() * (portrait ? 110 : 145);
-      ctx.fillRect(x, y - h, w, h + 6);
-      ctx.fillStyle = "rgba(255,205,140,.13)";
-      for (var wy = y - h + 8; wy < y - 6; wy += 10){
-        for (var wx = x + 4; wx < x + w - 4; wx += 7){
-          if (rnd() < 0.40) ctx.fillRect(wx, wy, 2, 3);
+      var w = 14 + rnd()*42;
+      var h = 22 + rnd() * (portrait ? 95 : 130);
+      ctx.fillStyle = "rgba(8,12,21,.92)";
+      ctx.fillRect(x, y - h, w, h + 8);
+      ctx.fillStyle = "rgba(255,205,140,.12)";
+      for (var wy = y - h + 7; wy < y - 6; wy += 9){
+        for (var wx = x + 4; wx < x + w - 4; wx += 6){
+          if (rnd() < 0.38) ctx.fillRect(wx, wy, 1.6, 2.6);
         }
       }
-      ctx.fillStyle = "rgba(8,12,22,.92)";
-      x += w + 3 + (rnd() < 0.28 ? 2 : 0);
+      x += w + 3 + (rnd() < 0.3 ? 2 : 0);
     }
 
     var grd = ctx.createLinearGradient(0, y, 0, H);
-    grd.addColorStop(0, "#0a0f1a");
-    grd.addColorStop(1, "#04060c");
+    grd.addColorStop(0, "#090e19");
+    grd.addColorStop(1, "#03050b");
     ctx.fillStyle = grd; ctx.fillRect(0, y, W, H - y);
 
-    ctx.globalAlpha = 0.32;
+    ctx.globalAlpha = 0.3;
     ctx.fillStyle = "#9fb6d8";
     ctx.textAlign = "left";
-    ctx.font = "600 " + Math.max(9, Math.min(13, W/95)) + "px -apple-system, sans-serif";
-    ctx.fillText("L O S   A N G E L E S", 16, y + 24);
+    ctx.font = "600 " + Math.max(8, Math.min(12, W/100)) + "px -apple-system, sans-serif";
+    ctx.fillText("L O S   A N G E L E S", 16, y + 22);
     ctx.globalAlpha = 1;
   }
 
   function palm(x, baseYY, scale, sway){
     ctx.save();
     ctx.translate(x, baseYY);
-    var h = 120 * scale;
-    ctx.strokeStyle = "rgba(10,16,20,.95)";
+    var h = 118 * scale;
+    ctx.strokeStyle = "rgba(9,14,19,.95)";
     ctx.lineWidth = 5 * scale;
     ctx.beginPath();
     ctx.moveTo(0,0);
-    ctx.quadraticCurveTo(-10*scale, -h*0.5, sway*8*scale, -h);
+    ctx.quadraticCurveTo(-9*scale, -h*0.5, sway*8*scale, -h);
     ctx.stroke();
     var topX = sway*8*scale, topY = -h;
     for (var i=0;i<7;i++){
       var a = -Math.PI*0.92 + (i/6) * Math.PI * 0.84;
-      var len = (34 + ((i*13)%17)) * scale;
-      ctx.lineWidth = 4.2 * scale;
+      var len = (32 + ((i*13)%17)) * scale;
+      ctx.lineWidth = 4 * scale;
       ctx.beginPath();
       ctx.moveTo(topX, topY);
       ctx.quadraticCurveTo(topX + Math.cos(a)*len*0.6, topY + Math.sin(a)*len*0.6 - 8*scale,
@@ -276,53 +437,41 @@
     ctx.restore();
   }
 
-
   function ferris(x, baseYY, scale, lit){
-    var R = 46 * scale;
-    var cyy = baseYY - R - 26 * scale;
+    var R = 44 * scale;
+    var cyy = baseYY - R - 24 * scale;
     ctx.save();
     ctx.translate(x, cyy);
-    // 支架
-    ctx.strokeStyle = "rgba(10,15,24,.95)";
+    ctx.strokeStyle = "rgba(9,14,22,.95)";
     ctx.lineWidth = 3 * scale;
     ctx.beginPath();
-    ctx.moveTo(0, R + 20*scale); ctx.lineTo(-R*0.62, R + 26*scale);
-    ctx.moveTo(0, R + 20*scale); ctx.lineTo(R*0.62, R + 26*scale);
+    ctx.moveTo(0, R + 18*scale); ctx.lineTo(-R*0.6, R + 24*scale);
+    ctx.moveTo(0, R + 18*scale); ctx.lineTo( R*0.6, R + 24*scale);
     ctx.stroke();
-    // 轮圈
-    ctx.strokeStyle = "rgba(12,18,28,.95)";
-    ctx.lineWidth = 2.4 * scale;
+    ctx.strokeStyle = "rgba(11,17,27,.95)";
+    ctx.lineWidth = 2.2 * scale;
     ctx.beginPath(); ctx.arc(0,0,R,0,Math.PI*2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0,0,R*0.72,0,Math.PI*2); ctx.stroke();
-    // 辐条 + 灯
+    ctx.beginPath(); ctx.arc(0,0,R*0.7,0,Math.PI*2); ctx.stroke();
     for (var i=0;i<16;i++){
       var a = i * Math.PI/8;
-      ctx.strokeStyle = "rgba(12,18,28,.9)";
-      ctx.lineWidth = 1.6 * scale;
+      ctx.strokeStyle = "rgba(11,17,27,.9)";
+      ctx.lineWidth = 1.4 * scale;
       ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*R, Math.sin(a)*R); ctx.stroke();
       var gx = Math.cos(a)*R, gy = Math.sin(a)*R;
-      var gg = ctx.createRadialGradient(gx, gy, 0, gx, gy, 6*scale);
-      gg.addColorStop(0, "rgba(255,224,170," + (0.8*lit) + ")");
-      gg.addColorStop(0.5, "rgba(255,170,110," + (0.3*lit) + ")");
-      gg.addColorStop(1, "rgba(255,140,90,0)");
-      ctx.fillStyle = gg;
-      ctx.beginPath(); ctx.arc(gx, gy, 6*scale, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 0.85 * lit;
+      var sp = 8 * scale;
+      ctx.drawImage(SPR.warm, gx - sp, gy - sp, sp*2, sp*2);
+      ctx.globalAlpha = 1;
     }
-    ctx.fillStyle = "rgba(12,18,28,.95)";
-    ctx.beginPath(); ctx.arc(0,0,4*scale,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = "rgba(11,17,27,.95)";
+    ctx.beginPath(); ctx.arc(0,0,3.4*scale,0,Math.PI*2); ctx.fill();
     ctx.restore();
-    ctx.globalAlpha = 0.22 * lit;
-    ctx.fillStyle = "#9fb6d8";
-    ctx.textAlign = "center";
-    ctx.font = "600 " + Math.max(7, Math.min(10, W/130)) + "px -apple-system, sans-serif";
-    ctx.fillText("S A N T A   M O N I C A", x, baseYY + 14*scale);
-    ctx.globalAlpha = 1;
   }
 
   function castle(x, baseYY, scale, lit){
     ctx.save();
     ctx.translate(x, baseYY);
-    ctx.fillStyle = "rgba(11,14,26,.95)";
+    ctx.fillStyle = "rgba(10,13,24,.95)";
     var u = scale;
     ctx.fillRect(-58*u, -34*u, 116*u, 34*u);
     ctx.fillRect(-44*u, -52*u, 88*u, 20*u);
@@ -337,36 +486,145 @@
       ctx.lineTo(dx*u + 11*u, -78*u);
       ctx.closePath(); ctx.fill();
     });
-    ctx.strokeStyle = "rgba(11,14,26,.95)";
-    ctx.lineWidth = 2*u;
-    ctx.beginPath(); ctx.moveTo(0,-134*u); ctx.lineTo(0,-146*u); ctx.stroke();
-
-    var g = ctx.createRadialGradient(0,-70*u,2, 0,-70*u, 68*u);
+    var g = ctx.createRadialGradient(0,-70*u,2, 0,-70*u, 66*u);
     g.addColorStop(0, "rgba(255,206,140," + (0.7*lit) + ")");
-    g.addColorStop(0.5, "rgba(255,170,90," + (0.22*lit) + ")");
     g.addColorStop(1, "rgba(255,150,80,0)");
     ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(0,-70*u, 68*u, 0, Math.PI*2); ctx.fill();
-
+    ctx.beginPath(); ctx.arc(0,-70*u, 66*u, 0, Math.PI*2); ctx.fill();
     ctx.fillStyle = "rgba(255,225,170," + (0.7*lit) + ")";
-    [[0,-92,3.4],[-16,-64,2.6],[16,-64,2.6],[-40,-56,2.6],[40,-56,2.6]].forEach(function(wk){
+    [[0,-92,3.2],[-16,-64,2.4],[16,-64,2.4],[-40,-56,2.4],[40,-56,2.4]].forEach(function(wk){
       ctx.beginPath(); ctx.arc(wk[0]*u, wk[1]*u, wk[2]*u, 0, Math.PI*2); ctx.fill();
     });
-
-    ctx.strokeStyle = "rgba(255,220,160," + (0.35*lit) + ")";
-    ctx.lineWidth = 1.2*u;
-    ctx.beginPath();
-    ctx.moveTo(-58*u,-34*u);
-    ctx.quadraticCurveTo(0,-52*u, 58*u,-34*u);
-    ctx.stroke();
     ctx.restore();
-
-    ctx.globalAlpha = 0.26 * lit;
+    ctx.globalAlpha = 0.24 * lit;
     ctx.fillStyle = "#9fb6d8";
     ctx.textAlign = "center";
-    ctx.font = "600 " + Math.max(8, Math.min(11, W/115)) + "px -apple-system, sans-serif";
-    ctx.fillText("D I S N E Y L A N D", x, baseYY + 18*u);
+    ctx.font = "600 " + Math.max(8, Math.min(10, W/130)) + "px -apple-system, sans-serif";
+    ctx.fillText("D I S N E Y L A N D", x, baseYY + 16*u);
     ctx.globalAlpha = 1;
+  }
+
+  /* ---------- 绘制一棵树（含状态动画） ---------- */
+  function drawTree(now, time){
+    var be = phase === "bloom" ? (now - bloomT0) : 0;
+
+    function posFor(item, delayBase){
+      if (phase === "gather"){
+        var delay = (1 - item.t) * delayBase; // 顶部先落
+        var pr = Math.min(1, Math.max(0, (now - phaseT0 - delay) / gatherDur));
+        if (pr <= 0) return null;
+        var e = easeOutCubic(pr);
+        var startY = item.by - (H * 0.95);
+        var y = startY + (item.by - startY) * e;
+        var x = item.bx + Math.sin(pr * Math.PI * 1.2 + item.ph) * 16 * (1 - pr);
+        return {x: x, y: y, a: 0.25 + 0.75 * pr};
+      }
+      if (phase === "bloom"){
+        var k = Math.min(1, be / BLOOM_OUT);
+        var ek = easeOutCubic(k);
+        var d = (item.bspd || 200) * ek;
+        var out = be / BLOOM_END;
+        var a = out < 0.62 ? 1 : Math.max(0, 1 - (out - 0.62) / 0.38);
+        return {
+          x: item.bx + (item.bvx || 0) * d,
+          y: item.by + (item.bvy || 0) * d,
+          a: a
+        };
+      }
+      return {x: item.bx, y: item.by, a: 1};
+    }
+
+    // ---- 枝叶 ----
+    ctx.globalCompositeOperation = "source-over";
+    for (var i=0;i<foliage.length;i++){
+      var p = foliage[i];
+      var q = posFor(p, 1050);
+      if (!q) continue;
+      if (phase === "gather" && q.a < 0.98){
+        ctx.globalAlpha = 0.22 * q.a;
+        ctx.strokeStyle = "rgba(190,225,255,0.6)";
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(q.x, q.y - 16); ctx.lineTo(q.x, q.y); ctx.stroke();
+      }
+      ctx.globalAlpha = q.a * (0.55 + 0.45 * p.z);
+      if (p.snow){
+        ctx.fillStyle = "rgba(226,242,255," + (0.5 * q.a) + ")";
+      } else {
+        ctx.fillStyle = "rgb(" + p.col[0] + "," + p.col[1] + "," + p.col[2] + ")";
+      }
+      ctx.beginPath(); ctx.arc(q.x, q.y, p.s, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    // ---- 顶星 ----
+    var pulse = 0.5 + 0.5*Math.sin(time*2.0);
+    var starR = Math.max(11, Math.min(30, baseR * 0.12));
+    var starA = phase === "gather"
+      ? Math.min(1, Math.max(0, (now - phaseT0) / 600))
+      : (phase === "bloom" ? Math.max(0, 1 - (now - bloomT0)/900) : 1);
+    if (starA > 0){
+      ctx.save();
+      ctx.translate(cx, apexY - starR*0.15);
+      ctx.globalAlpha = starA;
+      var sg = ctx.createRadialGradient(0,0,0, 0,0, starR*2.8);
+      sg.addColorStop(0, "rgba(255,255,245,.95)");
+      sg.addColorStop(0.3, "rgba(255,226,160,.5)");
+      sg.addColorStop(1, "rgba(255,180,80,0)");
+      ctx.fillStyle = sg;
+      ctx.beginPath(); ctx.arc(0,0, starR*2.8, 0, Math.PI*2); ctx.fill();
+      for (var s=0;s<8;s++){
+        var a = s * Math.PI/4 + time*0.06;
+        var len = starR * (s%2 ? 1.2 : 2.7);
+        ctx.strokeStyle = "rgba(255,248,225," + (0.35 + 0.45*pulse) + ")";
+        ctx.lineWidth = Math.max(1, starR*0.04);
+        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*len, Math.sin(a)*len); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // ---- 暖灯 ----
+    ctx.globalCompositeOperation = "lighter";
+    for (var j=0;j<lights.length;j++){
+      var l = lights[j];
+      var ql = posFor(l, 1000);
+      if (!ql) continue;
+      var tw = 0.55 + 0.45 * Math.sin(time * l.sp + l.ph);
+      var sp = SPR[l.kind] || SPR.gold;
+      var size = (l.r * 2.15) * (1 + 0.12 * tw);
+      ctx.globalAlpha = ql.a * (0.38 + 0.34 * tw);
+      ctx.drawImage(sp, ql.x - size, ql.y - size, size*2, size*2);
+    }
+
+    // ---- 螺旋灯串 ----
+    for (var k=0;k<strand.length;k++){
+      var q2 = strand[k];
+      var qp = posFor(q2, 1000);
+      if (!qp) continue;
+      var stw = 0.5 + 0.5*Math.sin(time * q2.sp + q2.ph);
+      var ssize = q2.r * 2.2 * (0.8 + 0.4*stw);
+      ctx.globalAlpha = qp.a * (0.22 + 0.38*stw);
+      ctx.drawImage(SPR.gold, qp.x - ssize, qp.y - ssize, ssize*2, ssize*2);
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = "source-over";
+
+    // ---- 绽放光环 ----
+    if (phase === "bloom"){
+      var ee = now - bloomT0;
+      if (ee < 900){
+        var rk = easeOutCubic(ee / 900);
+        var rad = rk * Math.max(W,H) * 0.6;
+        ctx.globalCompositeOperation = "lighter";
+        var rg = ctx.createRadialGradient(cx, apexY + treeH*0.42, Math.max(1, rad*0.84),
+                                          cx, apexY + treeH*0.42, rad);
+        rg.addColorStop(0, "rgba(255,220,160,0)");
+        rg.addColorStop(0.7, "rgba(255,214,150," + (0.5*(1-rk)) + ")");
+        rg.addColorStop(1, "rgba(255,170,90,0)");
+        ctx.fillStyle = rg;
+        ctx.beginPath(); ctx.arc(cx, apexY + treeH*0.42, rad, 0, Math.PI*2); ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
+      }
+    }
   }
 
   /* ---------- 主循环 ---------- */
@@ -375,120 +633,40 @@
     if (!t0) t0 = ts;
     var time = (ts - t0) / 1000;
 
-    // 绽放进度先算，供场景元素使用
-    var bloomP = 0, bloomLit = 0.45;
-    if (blooming){
-      var e = ts - bloomT0;
-      if (e > BLOOM_DUR){ blooming = false; bloomP = 0; bloomLit = 0.45; }
-      else {
-        var k = e / BLOOM_DUR;
-        if (k < 0.42){ bloomP = easeOut(k / 0.42); bloomLit = 0.45 + 0.55 * bloomP; }
-        else {
-          var r = (k - 0.42) / 0.58;
-          bloomP = 1 - easeInOut(r);
-          bloomLit = 0.45 + 0.55 * (1 - r);
-        }
-      }
+    if (phase === "bloom" && ts - bloomT0 > BLOOM_END){
+      startGather(ts, 1500);
+      tipEl.innerHTML = "从天而降，重新拼成一棵树";
     }
 
     drawSky(time);
+    drawHills();
     drawSkyline();
 
-    var groundY = baseY + 26;
-    var sc = Math.min(1.5, Math.max(0.9, W / 980));
-    palm(W * 0.045, groundY + 8, sc, Math.sin(time*0.5) * 0.4);
-    ferris(W * 0.175, groundY, sc * (portrait ? 0.9 : 1.05), bloomLit);
-    palm(W * 0.94, groundY + 10, sc * 0.92, Math.sin(time*0.5 + 1.2) * 0.4);
-    castle(W * 0.80, groundY + 4, sc * (portrait ? 0.62 : 0.85), bloomLit);
+    var groundY = baseY + 24;
+    var sc = Math.min(1.5, Math.max(0.9, W / 1000));
+    palm(W * 0.345, groundY + 10, sc * 0.85, Math.sin(time*0.5) * 0.4);
+    palm(W * 0.955, groundY + 12, sc * 0.8, Math.sin(time*0.5 + 1.2) * 0.4);
+    ferris(W * 0.44, groundY, sc * (portrait ? 0.75 : 0.9), 1);
+    castle(W * 0.79, groundY + 2, sc * (portrait ? 0.58 : 0.8), 1);
+
+    // 米奇
+    drawMickey(W * (portrait ? 0.80 : 0.855), H * (portrait ? 0.16 : 0.19),
+               Math.min(W, H) * (portrait ? 0.055 : 0.048), time);
 
     // 地面反光
-    var refl = ctx.createRadialGradient(cx, baseY + 12, 4, cx, baseY + 12, baseR * 2.0);
-    refl.addColorStop(0, "rgba(255,206,140,.16)");
+    var refl = ctx.createRadialGradient(cx, baseY + 10, 4, cx, baseY + 10, baseR * 2.1);
+    refl.addColorStop(0, "rgba(255,206,140,.15)");
     refl.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = refl;
-    ctx.beginPath(); ctx.ellipse(cx, baseY + 12, baseR * 2.0, baseR * 0.55, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(cx, baseY + 10, baseR * 2.1, baseR * 0.5, 0, 0, Math.PI*2); ctx.fill();
 
     // 树光晕
-    var halo = ctx.createRadialGradient(cx, (apexY + baseY)/2, 8, cx, (apexY + baseY)/2, baseR * 1.7);
-    halo.addColorStop(0, "rgba(255,214,150," + (0.16 + 0.16*bloomP) + ")");
+    var halo = ctx.createRadialGradient(cx, (apexY+baseY)/2, 8, cx, (apexY+baseY)/2, baseR*1.65);
+    halo.addColorStop(0, "rgba(255,214,150,.18)");
     halo.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = halo; ctx.fillRect(0,0,W,H);
 
-    // 顶星
-    var pulse = 0.5 + 0.5 * Math.sin(time * 2.1);
-    var starR = Math.max(10, Math.min(26, baseR * 0.11));
-    var sg = ctx.createRadialGradient(cx, apexY - starR*0.2, 0, cx, apexY - starR*0.2, starR*2.8);
-    sg.addColorStop(0, "rgba(255,255,240,.95)");
-    sg.addColorStop(0.32, "rgba(255,226,160,.5)");
-    sg.addColorStop(1, "rgba(255,180,80,0)");
-    ctx.fillStyle = sg;
-    ctx.beginPath(); ctx.arc(cx, apexY - starR*0.2, starR*2.8, 0, Math.PI*2); ctx.fill();
-    ctx.save();
-    ctx.translate(cx, apexY - starR*0.2);
-    for (var i=0;i<8;i++){
-      var a = i * Math.PI/4 + time * 0.06;
-      var len = starR * (i%2 ? 1.2 : 2.6);
-      ctx.strokeStyle = "rgba(255,248,225," + (0.35 + 0.4*pulse) + ")";
-      ctx.lineWidth = Math.max(1, starR*0.035);
-      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*len, Math.sin(a)*len); ctx.stroke();
-    }
-    ctx.restore();
-
-    // 树粒 + 灯串
-    ctx.globalCompositeOperation = "lighter";
-    for (var p=0;p<tree.length;p++){
-      var pt = tree[p];
-      var dx = 0, dy = 0;
-      if (bloomP > 0.001){
-        var kk = Math.max(0, bloomP - pt.delay / 900);
-        dx = pt.vx * pt.spd * kk;
-        dy = pt.vy * pt.spd * kk;
-      }
-      var tw = pt.light ? (0.45 + 0.55 * Math.abs(Math.sin(time * pt.sp + pt.ph)))
-                        : (0.26 + 0.18 * Math.sin(time * 0.9 + pt.ph));
-      var rr = pt.s * (0.9 + 0.5 * bloomP);
-      if (pt.light){
-        var c = pt.col;
-        ctx.fillStyle = "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + ((0.26 + 0.6*tw) * pt.z) + ")";
-        ctx.beginPath(); ctx.arc(pt.bx + dx, pt.by + dy, rr * 1.25, 0, Math.PI*2); ctx.fill();
-      } else {
-        ctx.fillStyle = "rgba(206,236,214," + ((0.15 + 0.28*tw) * pt.z) + ")";
-        ctx.beginPath(); ctx.arc(pt.bx + dx, pt.by + dy, rr, 0, Math.PI*2); ctx.fill();
-      }
-    }
-    for (var gi=0; gi<garland.length; gi++){
-      var gl = garland[gi];
-      var gk = Math.max(0, bloomP - gl.delay / 900);
-      var gx = gl.bx + gl.vx * gl.spd * gk;
-      var gy = gl.by + gl.vy * gl.spd * gk;
-      var gtw = 0.5 + 0.5 * Math.sin(time * 2.6 + gl.ph);
-      var gs = Math.max(0.55, Math.min(1.5, baseR / 250));
-      var gr = (1.4 + 2.0 * gtw) * gs;
-      var gg = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr * 3.0);
-      gg.addColorStop(0, "rgba(255,244,214," + (0.85*gtw) + ")");
-      gg.addColorStop(0.4, "rgba(255,196,128," + (0.42*gtw) + ")");
-      gg.addColorStop(1, "rgba(255,160,90,0)");
-      ctx.fillStyle = gg;
-      ctx.beginPath(); ctx.arc(gx, gy, gr * 3.0, 0, Math.PI*2); ctx.fill();
-    }
-    ctx.globalCompositeOperation = "source-over";
-
-    // 绽放光环
-    if (blooming){
-      var ee = ts - bloomT0;
-      if (ee < 1100){
-        var rk = easeOut(ee / 1100);
-        var rad = rk * Math.max(W, H) * 0.55;
-        ctx.globalCompositeOperation = "lighter";
-        var rg = ctx.createRadialGradient(cx, apexY + treeH*0.42, Math.max(1, rad*0.86), cx, apexY + treeH*0.42, rad);
-        rg.addColorStop(0, "rgba(255,220,160,0)");
-        rg.addColorStop(0.72, "rgba(255,214,150," + (0.42 * (1 - rk)) + ")");
-        rg.addColorStop(1, "rgba(255,170,90,0)");
-        ctx.fillStyle = rg;
-        ctx.beginPath(); ctx.arc(cx, apexY + treeH*0.42, rad, 0, Math.PI*2); ctx.fill();
-        ctx.globalCompositeOperation = "source-over";
-      }
-    }
+    drawTree(ts, time);
 
     // 烟花
     ctx.globalCompositeOperation = "lighter";
@@ -496,10 +674,10 @@
       var sk = sparks[si];
       sk.x += sk.vx * 0.016;
       sk.y += sk.vy * 0.016;
-      sk.vy += 46 * 0.016;
-      sk.vx *= 0.985; sk.vy *= 0.985;
+      sk.vy += 42 * 0.016;
+      sk.vx *= 0.986; sk.vy *= 0.986;
       sk.life -= sk.decay * 0.016;
-      if (sk.life <= 0){ sparks.splice(si, 1); continue; }
+      if (sk.life <= 0){ sparks.splice(si,1); continue; }
       ctx.fillStyle = "rgba(" + sk.col[0] + "," + sk.col[1] + "," + sk.col[2] + "," + (sk.life*0.9) + ")";
       ctx.beginPath(); ctx.arc(sk.x, sk.y, sk.size * (0.6 + sk.life*0.8), 0, Math.PI*2); ctx.fill();
     }
@@ -508,7 +686,9 @@
     requestAnimationFrame(frame);
   }
 
-  window.addEventListener("pointerdown", function(){ bloom(); });
+  window.addEventListener("pointerdown", function(){
+    if (phase !== "bloom") bloom(performance.now());
+  });
   window.addEventListener("resize", layout);
   window.addEventListener("orientationchange", function(){ setTimeout(layout, 180); });
 
