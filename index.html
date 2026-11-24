@@ -169,10 +169,11 @@
     tree.length = 0;
     var w = window.innerWidth, h = window.innerHeight;
     cx = w * 0.5;
-    var treeH = Math.min(h * 0.60, w * 0.92);
-    baseY = h * 0.845;
+    var portrait = h > w * 1.15;
+    var treeH = Math.min(h * (portrait ? 0.52 : 0.60), w * (portrait ? 0.95 : 0.92));
+    baseY = h * (portrait ? 0.775 : 0.845);
     apexY = baseY - treeH;
-    baseR = Math.min(w * 0.30, treeH * 0.50);
+    baseR = Math.min(w * (portrait ? 0.42 : 0.30), treeH * (portrait ? 0.62 : 0.50));
     N = Math.round(Math.min(6500, Math.max(2200, w * h / 240)));
     for (var i=0;i<N;i++){
       var t = Math.pow(Math.random(), 0.55);           // 0 底部 → 1 顶部
@@ -248,7 +249,7 @@
     CARS.forEach(function(car, i){
       var slot = slots[i % slots.length];
       var r = baseR * (1 - slot.t);
-      var x = cx + Math.cos(slot.ang) * r * 0.80;
+      var x = cx + Math.cos(slot.ang) * r * 0.85;
       var y = baseY - slot.t * treeH;
       var size = Math.max(44, Math.min(102, r * 0.38));
       var el = document.createElement("button");
@@ -368,7 +369,7 @@
     var cone = ctx.createLinearGradient(cx, apexY, cx, baseY);
     cone.addColorStop(0, "rgba(" + Math.round(theme.r) + "," + Math.round(theme.g) + "," + Math.round(theme.b) + "," + (0.10*lit) + ")");
     cone.addColorStop(0.55, "rgba(" + Math.round(theme.r) + "," + Math.round(theme.g) + "," + Math.round(theme.b) + "," + (0.14*lit) + ")");
-    cone.addColorStop(1, "rgba(40,90,70," + (0.05*lit) + ")");
+    cone.addColorStop(1, "rgba(30,70,55,0)");
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(cx, apexY);
