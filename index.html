@@ -104,8 +104,8 @@
     <div class="line"></div>
   </div>
   <div class="bottom">
-    <div class="tip" id="tip">Tap the tree &mdash; it <b>blooms</b>, then falls back from the sky</div>
-    <div class="brand" id="brand">3D Spinning Tree &nbsp;·&nbsp; Swipe to rotate &nbsp;·&nbsp; v24</div>
+    <div class="tip" id="tip">Tap the tree &mdash; it <b>turns into a heart</b></div>
+    <div class="brand" id="brand">3D Spinning Tree &nbsp;·&nbsp; Swipe to rotate &nbsp;·&nbsp; v25</div>
   </div>
 </div>
 
@@ -325,39 +325,74 @@
     }
   }
 
-  /* ---------- 状态机：gather（从天而降拼合）/ idle / bloom ---------- */
+  /* ---------- 状态机：gather（从天而降）/ idle（树）/ heart（爱心） ---------- */
   var phase = "gather", phaseT0 = 0, gatherDur = 1500;
-  var bloomT0 = 0, BLOOM_OUT = 720, BLOOM_END = 1500;
+  var heartProg = 0;          // 0 = 树，1 = 爱心
+  var heartDir = 0;           // +1 变心，-1 回树
+  var HEART_MS = 900;
+  var heartCX = 0, heartCY = 0, heartUnit = 10;
+  var timeNow = 0;
 
   function startGather(now, dur){
     phase = "gather"; phaseT0 = now; gatherDur = dur || 1500;
+    heartProg = 0; heartDir = 0;
   }
 
-  var bloomMidY = 0;
-  function bloom(now){
-    phase = "bloom"; bloomT0 = now;
-    bloomMidY = apexY + treeH * 0.42;
-    function aim(list, base){
+  // 心形参数方程
+  function heartPoint(u){
+    var a = u * Math.PI * 2;
+    var hx = 16 * Math.pow(Math.sin(a), 3);
+    var hy = 13 * Math.cos(a) - 5 * Math.cos(2*a) - 2 * Math.cos(3*a) - Math.cos(4*a);
+    return [hx, -hy];
+  }
+
+  function buildHeartTargets(){
+    heartCX = cx;
+    heartCY = apexY + treeH * 0.48;
+    heartUnit = Math.min(baseR * 1.85 / 32, treeH * 0.64 / 30);
+
+    function assign(list, edgeBias, jitter){
       for (var i=0;i<list.length;i++){
-        var p = list[i], pr = project(p);
-        var dx = pr.x - cx, dy = pr.y - bloomMidY;
-        var len = Math.max(1, Math.sqrt(dx*dx + dy*dy));
-        p.bvx = dx / len; p.bvy = dy / len - 0.28;
-        p.bspd = base + Math.random() * 220;
+        var it = list[i];
+        var u = Math.random();
+        var pt = heartPoint(u);
+        var fill = Math.random() < edgeBias ? 1 : Math.pow(Math.random(), 0.55);
+        var jx = (Math.random()-0.5) * jitter;
+        var jy = (Math.random()-0.5) * jitter;
+        it.hx = heartCX + (pt[0] * fill + jx) * heartUnit;
+        it.hy = heartCY + (pt[1] * fill * 1.02 + jy) * heartUnit;
+        it.hs = 0.6 + Math.random() * 0.8;
       }
     }
-    aim(foliage, 130);
-    aim(lights, 150);
-    aim(strand, 160);
-    aim(starOrn, 140);
-    var n = W < 600 ? 3 : 5;
-    for (var b=0;b<n;b++){
-      var ang = -Math.PI*0.5 + (Math.random()-0.5) * 2.4;
-      var dist = Math.min(W,H) * (0.16 + Math.random()*0.3);
-      burst(cx + Math.cos(ang)*dist, (apexY+baseY)/2 + Math.sin(ang)*dist*0.5,
-            W < 600 ? 26 : 42, b % 2 ? TH.sparkA : TH.sparkB);
+    assign(foliage, 0.34, 3.2);
+    assign(lights, 0.92, 1.0);
+    assign(strand, 0.95, 0.8);
+    assign(starOrn, 0.86, 1.4);
+  }
+
+  function toHeart(now){
+    if (phase === "gather") return;
+    buildHeartTargets();
+    phase = "heart";
+    heartDir = 1;
+    for (var b=0;b<(W < 600 ? 2 : 3);b++){
+      burst(heartCX + (Math.random()-0.5) * baseR * 0.9,
+            heartCY + (Math.random()-0.5) * treeH * 0.5,
+            W < 600 ? 26 : 40, b % 2 ? [255,120,155] : [255,205,120]);
     }
-    tipEl.innerHTML = "Blooming &middot; gathering back from the sky";
+  }
+
+  function backToTree(){
+    if (phase !== "heart" || heartProg < 0.9) return;
+    heartDir = -1;
+  }
+
+  function updateHeart(dt){
+    if (heartDir !== 0){
+      heartProg += heartDir * dt * 1000 / HEART_MS;
+      if (heartProg >= 1){ heartProg = 1; heartDir = 0; }
+      if (heartProg <= 0){ heartProg = 0; heartDir = 0; phase = "idle"; }
+    }
   }
 
   /* ---------- 烟花 ---------- */
@@ -643,16 +678,18 @@
         fresh: pr < 0.999
       };
     }
-    if (phase === "bloom"){
-      var be = now - bloomT0;
-      var k = Math.min(1, be / BLOOM_OUT);
-      var d = (it.bspd || 200) * easeOutCubic(k);
-      var out = be / BLOOM_END;
+    if (heartProg > 0 && it.hx !== undefined){
+      var e = easeInOut(heartProg);
+      var pulse = heartProg >= 0.999 ? 1 + 0.035 * Math.sin(timeNow * 3.2) : 1;
       return {
-        x: pf.x + (it.bvx || 0) * d,
-        y: pf.y + (it.bvy || 0) * d,
-        a: out < 0.62 ? 1 : Math.max(0, 1 - (out - 0.62) / 0.38),
-        fresh: false
+        x: pf.x + (it.hx - pf.x) * e + (it.hx - heartCX) * (pulse - 1),
+        y: pf.y + (it.hy - pf.y) * e + (it.hy - heartCY) * (pulse - 1),
+        a: 1,
+        fresh: false,
+        hp: heartProg,
+        hd: Math.min(1, Math.sqrt(
+          Math.pow(it.hx - heartCX, 2) + Math.pow(it.hy - heartCY, 2)
+        ) / (heartUnit * 17))
       };
     }
     return {x: pf.x, y: pf.y, a: 1, fresh: false};
@@ -683,6 +720,34 @@
   function drawTree(now, time){
     treeRot = spinAngle;
 
+    if (heartProg > 0.03 && heartUnit > 2){
+      var pa = heartProg;
+      // 实心心形底
+      ctx.beginPath();
+      for (var hu=0; hu<=64; hu++){
+        var hpt = heartPoint(hu / 64);
+        var hx2 = heartCX + hpt[0] * heartUnit * 1.02;
+        var hy2 = heartCY + hpt[1] * heartUnit * 1.02;
+        if (hu === 0) ctx.moveTo(hx2, hy2); else ctx.lineTo(hx2, hy2);
+      }
+      ctx.closePath();
+      var hfill = ctx.createRadialGradient(heartCX, heartCY - heartUnit*4, heartUnit*2,
+                                           heartCX, heartCY, heartUnit*19);
+      hfill.addColorStop(0, "rgba(208,18,58," + (0.72 * pa) + ")");
+      hfill.addColorStop(0.62, "rgba(196,22,64," + (0.5 * pa) + ")");
+      hfill.addColorStop(1, "rgba(180,24,70," + (0.26 * pa) + ")");
+      ctx.fillStyle = hfill;
+      ctx.fill();
+
+      var hg2 = ctx.createRadialGradient(heartCX, heartCY, heartUnit * 3,
+                                        heartCX, heartCY, heartUnit * 22);
+      hg2.addColorStop(0, "rgba(96,4,38," + (0.34 * pa) + ")");
+      hg2.addColorStop(0.5, "rgba(120,6,46," + (0.20 * pa) + ")");
+      hg2.addColorStop(1, "rgba(120,6,46,0)");
+      ctx.fillStyle = hg2;
+      ctx.beginPath(); ctx.arc(heartCX, heartCY, heartUnit * 22, 0, Math.PI*2); ctx.fill();
+    }
+
     // ---- 针叶（先画背面，再画正面，得到遮挡感） ----
     ctx.globalCompositeOperation = "source-over";
     for (var pass = 0; pass < 2; pass++){
@@ -701,7 +766,22 @@
         }
         var lit = 0.55 + 0.45 * ((pf.d + 1) / 2);
         ctx.globalAlpha = q.a * (0.84 + 0.16 * lit);
-        if (p.snow){
+        var hp = q.hp || 0;
+        if (hp > 0.02){
+          var hd = q.hd || 0;
+          var hr = Math.round(206 - 6 * hd), hg = Math.round(16 + 74 * hd), hb = Math.round(52 + 86 * hd);
+          var mixA = hp;
+          var baseC = p.red
+            ? [Math.round(TH.red[0] * 0.9), Math.round(TH.red[1] * 0.9), Math.round(TH.red[2] * 0.9)]
+            : [Math.round(TH.leaf[0] + (TH.leafHi[0]-TH.leaf[0]) * lit),
+               Math.round(TH.leaf[1] + (TH.leafHi[1]-TH.leaf[1]) * lit),
+               Math.round(TH.leaf[2] + (TH.leafHi[2]-TH.leaf[2]) * lit)];
+          ctx.fillStyle = "rgb(" +
+            Math.round(baseC[0] * (1 - mixA) + hr * mixA) + "," +
+            Math.round(baseC[1] * (1 - mixA) + hg * mixA) + "," +
+            Math.round(baseC[2] * (1 - mixA) + hb * mixA) + ")";
+          ctx.globalAlpha = (0.86 + 0.14 * (1 - hd)) * q.a;
+        } else if (p.snow){
           ctx.fillStyle = "rgba(255,246,250," + (0.55 * q.a) + ")";
         } else if (p.red){
           ctx.fillStyle = "rgb(" +
@@ -725,7 +805,8 @@
     var starR = Math.max(12, Math.min(32, baseR * 0.13));
     var starA = phase === "gather"
       ? Math.min(1, Math.max(0, (now - phaseT0) / 600))
-      : (phase === "bloom" ? Math.max(0, 1 - (now - bloomT0) / 900) : 1);
+      : 1;
+    starA *= (1 - heartProg);
     if (starA > 0){
       var tipY = apexY - starR * 0.55;
       ctx.save();
@@ -749,7 +830,7 @@
       var ql = posFor(pl, l, 1000, now);
       if (!ql) continue;
       var tw = 0.55 + 0.45 * Math.sin(time * l.sp + l.ph);
-      var sp = SPR[l.kind] || SPR.gold;
+      var sp = (heartProg > 0.35) ? SPR.red : (SPR[l.kind] || SPR.gold);
       var size = l.rd * 1.95 * pl.sc * (1 + 0.12 * tw);
       ctx.globalAlpha = ql.a * (0.40 + 0.34 * tw) * (0.7 + 0.3 * ((pl.d + 1) / 2));
       ctx.drawImage(sp, ql.x - size, ql.y - size, size*2, size*2);
@@ -782,20 +863,17 @@
     ctx.globalCompositeOperation = "source-over";
 
     // ---- 绽放光环 ----
-    if (phase === "bloom"){
-      var ee = now - bloomT0;
-      if (ee < 900){
-        var rk = easeOutCubic(ee / 900);
-        var rad = rk * Math.max(W,H) * 0.62;
-        ctx.globalCompositeOperation = "lighter";
-        var rg = ctx.createRadialGradient(cx, bloomMidY, Math.max(1, rad*0.82), cx, bloomMidY, rad);
-        rg.addColorStop(0, "rgba(" + TH.ring + ",0)");
-        rg.addColorStop(0.7, "rgba(" + TH.ring + "," + (0.42*(1-rk)) + ")");
-        rg.addColorStop(1, "rgba(" + TH.ring + ",0)");
-        ctx.fillStyle = rg;
-        ctx.beginPath(); ctx.arc(cx, bloomMidY, rad, 0, Math.PI*2); ctx.fill();
-        ctx.globalCompositeOperation = "source-over";
-      }
+    if (heartProg > 0.5){
+      var glowA = (heartProg - 0.5) / 0.5;
+      ctx.globalCompositeOperation = "lighter";
+      var rg = ctx.createRadialGradient(heartCX, heartCY, heartUnit * 2,
+                                        heartCX, heartCY, heartUnit * 24);
+      rg.addColorStop(0, "rgba(255,90,130," + (0.16 * glowA) + ")");
+      rg.addColorStop(0.55, "rgba(255,60,110," + (0.10 * glowA) + ")");
+      rg.addColorStop(1, "rgba(255,40,90,0)");
+      ctx.fillStyle = rg;
+      ctx.beginPath(); ctx.arc(heartCX, heartCY, heartUnit * 24, 0, Math.PI*2); ctx.fill();
+      ctx.globalCompositeOperation = "source-over";
     }
   }
 
@@ -838,15 +916,16 @@
   function frame(ts){
     if (!t0) t0 = ts;
     var time = (ts - t0) / 1000;
+    timeNow = time;
     var dt = lastTs ? Math.min(0.05, (ts - lastTs) / 1000) : 0.016;
     lastTs = ts;
     spinVel *= 0.92;
     if (Math.abs(spinVel) < 0.05) spinVel = 0;
     spinAngle += (TREE_SPIN + spinVel) * dt;
 
-    if (phase === "bloom" && ts - bloomT0 > BLOOM_END){
-      startGather(ts, 1500);
-      tipEl.innerHTML = "Falling from the sky &mdash; one sparkle at a time";
+    updateHeart(dt);
+    if (phase === "gather" && ts - phaseT0 > gatherDur + 1150){
+      phase = "idle";
     }
 
     drawSky(time);
@@ -1151,7 +1230,10 @@
     if (!drag.down) return;
     drag.down = false;
     var quick = performance.now() - drag.t0 < 480;
-    if (!drag.moved && quick && phase !== "bloom") bloom(performance.now());
+    if (!drag.moved && quick){
+      if (phase === "heart") backToTree();
+      else if (phase === "idle") toHeart(performance.now());
+    }
   }, true);
   window.addEventListener("pointercancel", function(){ drag.down = false; });
   window.addEventListener("resize", layout);
