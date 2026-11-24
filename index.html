@@ -706,7 +706,8 @@
 
   /* ---------- 背景音乐（Web Audio 现场合成，无外部音频文件） ---------- */
   /* 想换成自己的音频：把 AUDIO_SRC 填成同目录下的文件名或 URL，如 "last-christmas.mp3" */
-  var AUDIO_SRC = "";
+  var AUDIO_SRC = "";               // 手动写死：如 "last-christmas.mp3"
+  var AUDIO_CANDIDATES = ["last-christmas.mp3","last-christmas.m4a","last-christmas.wav","last-christmas.ogg","bgm.mp3","music.mp3"];
   var Music = (function(){
     var ctxA = null, master = null, bellBus = null, padBus = null, noiseBuf = null;
     var playing = false, timer = null, nextTime = 0, step = 0, tempo = 92;
@@ -791,11 +792,27 @@
       }
     }
 
+    var detectedSrc = "";
+    function probe(cb){
+      if (AUDIO_SRC){ cb(AUDIO_SRC); return; }
+      var i = 0;
+      (function next(){
+        if (i >= AUDIO_CANDIDATES.length){ cb(""); return; }
+        var url = AUDIO_CANDIDATES[i++];
+        fetch(url, {method:"HEAD"}).then(function(r){
+          if (r && r.ok){ cb(url); } else { next(); }
+        }).catch(function(){ next(); });
+      })();
+    }
+
     var extAudio = null, extTimer = null;
     function startExternal(){
       if (!extAudio){
         extAudio = new Audio(AUDIO_SRC);
         extAudio.loop = true; extAudio.volume = 0;
+        extAudio.setAttribute("playsinline","");
+        extAudio.style.display = "none";
+        document.body.appendChild(extAudio);
         extAudio.crossOrigin = "anonymous";
       }
       var p = extAudio.play();
@@ -809,6 +826,7 @@
 
     function start(){
       if (playing) return;
+      if (!AUDIO_SRC && detectedSrc) AUDIO_SRC = detectedSrc;
       if (AUDIO_SRC){ playing = true; startExternal(); return; }
       if (!ctxA){
         var AC = window.AudioContext || window.webkitAudioContext;
@@ -851,6 +869,9 @@
 
     return {
       isPlaying: function(){ return playing; },
+      probeNow: function(cb){ probe(cb); },
+      using: function(){ return AUDIO_SRC || detectedSrc || ""; },
+      setSrc: function(v){ if (v) detectedSrc = v; },
       toggle: function(){ playing ? stop() : start(); return playing; },
       auto: function(){ start(); },
       stop: stop
@@ -867,8 +888,15 @@
     sndBtn.classList.toggle("on", on);
     sndLabel.textContent = (musicWanted ? "音乐" : "静音");
   }
-  syncSnd();
   var everPlayed = false;
+  syncSnd();
+  Music.probeNow(function(src){
+    if (src){
+      Music.setSrc(src);
+      sndBtn.setAttribute("data-src", src);
+      sndBtn.title = "当前音源：" + src;
+    }
+  });
   sndBtn.addEventListener("click", function(ev){
     ev.stopPropagation();
     if (!musicWanted){ musicWanted = true; }
