@@ -850,6 +850,7 @@
     }
 
     return {
+      isPlaying: function(){ return playing; },
       toggle: function(){ playing ? stop() : start(); return playing; },
       auto: function(){ start(); },
       stop: stop
@@ -862,15 +863,18 @@
   var musicWanted = true;
   try { if (localStorage.getItem("christmas_bgm") === "off") musicWanted = false; } catch(e){}
   function syncSnd(){
-    var on = musicWanted;
+    var on = musicWanted && (Music.isPlaying() || !everPlayed);
     sndBtn.classList.toggle("on", on);
-    sndLabel.textContent = on ? "音乐" : "静音";
+    sndLabel.textContent = (musicWanted ? "音乐" : "静音");
   }
   syncSnd();
+  var everPlayed = false;
   sndBtn.addEventListener("click", function(ev){
     ev.stopPropagation();
-    musicWanted = !musicWanted;
-    if (musicWanted) Music.auto(); else Music.stop();
+    if (!musicWanted){ musicWanted = true; }
+    else if (Music.isPlaying()){ musicWanted = false; Music.stop(); }
+    else { Music.auto(); }
+    if (musicWanted && Music.isPlaying()) everPlayed = true;
     try { localStorage.setItem("christmas_bgm", musicWanted ? "on" : "off"); } catch(e){}
     syncSnd();
   });
@@ -878,7 +882,7 @@
   var firstGesture = true;
   window.addEventListener("pointerdown", function(ev){
     if (ev.target && ev.target.closest && ev.target.closest("#snd")) return;
-    if (firstGesture){ firstGesture = false; if (musicWanted) Music.auto(); }
+    if (firstGesture){ firstGesture = false; if (musicWanted){ Music.auto(); everPlayed = true; } syncSnd(); }
     if (phase !== "bloom") bloom(performance.now());
   }, true);
   window.addEventListener("resize", layout);
