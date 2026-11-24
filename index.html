@@ -6,36 +6,72 @@
 <meta name="theme-color" content="#ffc9da" />
 <title>Bava · Merry Christmas 2026 · Hollywood × Disneyland</title>
 <style>
-  :root{ --pink:#ff9dc2; --pink-deep:#8d1147; --gold:#ffdf6b; --gold-soft:rgba(255,214,150,.32); --ink:#fff4f8; --dim:#ffd8e6; }
+  :root{
+  --pink:#ff9dc2; --gold:#ffdf6b; --gold-soft:rgba(255,214,150,.32);
+  --ink:#fff4f8; --dim:#ffd8e6;
+  --bg:#ffc9da;
+  --title:#fff6fa;
+  --title-shadow:0 0 18px rgba(255,150,200,.55),0 2px 26px rgba(120,8,52,.55);
+  --sub:#ffd3e4;
+  --line:rgba(255,224,120,.7);
+  --tip:#ffe1ec;
+  --tip-shadow:0 1px 12px rgba(90,6,40,.8);
+  --tip-b:#ffe45c;
+  --brand:#e7a9c6;
+  --vig:rgba(112,8,54,.55);
+  --btn-border:rgba(255,226,150,.55);
+  --btn-bg:rgba(122,10,55,.42);
+  --btn-fg:#fff0f6;
+}
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:#ffc9da;overflow:hidden}
+  html,body{height:100%;margin:0;background:var(--bg);overflow:hidden}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
     color:var(--ink);-webkit-tap-highlight-color:transparent;user-select:none;
   }
   #scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
   .vignette{position:fixed;inset:0;pointer-events:none;
-    background:radial-gradient(120% 92% at 50% 44%, transparent 46%, rgba(112,8,54,.55) 100%);}
+    background:radial-gradient(120% 92% at 50% 44%, transparent 46%, var(--vig) 100%);}
   .hud{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between}
   .top{padding:clamp(16px,4.4vh,42px) 16px 0;text-align:center}
   .top h1{
     margin:0;font-weight:600;letter-spacing:.11em;
     font-size:clamp(17px,3.1vw,33px);
-    color:#fff6fa;
-    text-shadow:0 0 18px rgba(255,150,200,.55),0 2px 26px rgba(120,8,52,.55);
+    color:var(--title);
+    text-shadow:var(--title-shadow);
   }
-  .top .sub{margin-top:.85em;font-size:clamp(9px,1.15vw,12px);letter-spacing:.38em;color:#ffd3e4;text-transform:uppercase}
+  .top .sub{margin-top:.85em;font-size:clamp(9px,1.15vw,12px);letter-spacing:.38em;color:var(--sub);text-transform:uppercase}
   .top .line{margin:10px auto 0;width:min(320px,52vw);height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,224,120,.7),transparent)}
+    background:linear-gradient(90deg,transparent,var(--line),transparent)}
   .bottom{padding:0 16px clamp(16px,4vh,34px);text-align:center}
-  .tip{font-size:clamp(11px,1.5vw,13px);color:#ffe1ec;letter-spacing:.06em;text-shadow:0 1px 12px rgba(90,6,40,.8)}
-  .tip b{color:#ffe45c;font-weight:600}
+  .tip{font-size:clamp(11px,1.5vw,13px);color:var(--tip);letter-spacing:.06em;text-shadow:var(--tip-shadow)}
+  .tip b{color:var(--tip-b);font-weight:600}
   .snd{position:fixed;top:18px;right:18px;z-index:9;pointer-events:auto;cursor:pointer;
       display:flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;
-      border:1px solid rgba(255,226,150,.55);background:rgba(122,10,55,.42);
-      color:#fff0f6;font-size:12px;letter-spacing:.12em;backdrop-filter:blur(6px);
+      border:1px solid var(--btn-border);background:var(--btn-bg);
+      color:var(--btn-fg);font-size:12px;letter-spacing:.12em;backdrop-filter:blur(6px);
       transition:border-color .25s,box-shadow .25s,color .25s}
+  body.theme-classic{
+    --bg:#060a14; --title:#fff8ec; --title-shadow:0 0 18px rgba(255,200,120,.45),0 2px 26px rgba(0,0,0,.7);
+    --sub:#d8c8b0; --line:rgba(255,208,138,.55); --tip:#efe3cf; --tip-shadow:0 1px 12px rgba(0,0,0,.85);
+    --tip-b:#ffd08a; --brand:#8fa3c0; --vig:rgba(0,0,0,.66);
+    --btn-border:rgba(255,214,160,.45); --btn-bg:rgba(12,16,28,.55); --btn-fg:#f2e3c9;
+  }
+  body.theme-ice{
+    --bg:#dff3ff; --title:#ffffff; --title-shadow:0 0 18px rgba(150,220,255,.6),0 2px 26px rgba(8,50,80,.55);
+    --sub:#d6f2ff; --line:rgba(200,240,255,.7); --tip:#f2fbff; --tip-shadow:0 1px 12px rgba(6,40,64,.75);
+    --tip-b:#fff08a; --brand:#a6d8ee; --vig:rgba(8,52,84,.5);
+    --btn-border:rgba(200,240,255,.6); --btn-bg:rgba(12,54,86,.45); --btn-fg:#eafaff;
+  }
+  .theme{position:fixed;left:18px;top:18px;z-index:9;pointer-events:auto;cursor:pointer;
+      display:flex;align-items:center;gap:9px;padding:7px 13px;border-radius:999px;
+      border:1px solid var(--btn-border);background:var(--btn-bg);color:var(--btn-fg);
+      font-size:12px;letter-spacing:.12em;backdrop-filter:blur(6px);transition:box-shadow .25s,border-color .25s}
+  .theme:hover{box-shadow:0 0 18px rgba(255,255,255,.28)}
+  .theme .sw{width:12px;height:12px;border-radius:50%;box-shadow:0 0 8px currentColor}
   @media (max-width:700px){
+    .theme{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 78px);left:14px;padding:6px 11px;font-size:11px}
+
     .snd{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 78px);right:14px;padding:6px 11px;font-size:11px}
   }
   .snd:hover{border-color:rgba(255,240,180,.95);box-shadow:0 0 20px rgba(255,220,140,.35)}
@@ -47,7 +83,7 @@
   .snd .eq i:nth-child(2){height:11px;animation-delay:.18s}
   .snd .eq i:nth-child(3){height:7px;animation-delay:.36s}
   @keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
-  .brand{margin-top:8px;font-size:clamp(9px,1.05vw,11px);letter-spacing:.26em;color:#e7a9c6;text-transform:uppercase}
+  .brand{margin-top:8px;font-size:clamp(9px,1.05vw,11px);letter-spacing:.26em;color:var(--brand);text-transform:uppercase}
   @media (max-width:520px){ .top h1{letter-spacing:.04em} .top .sub{letter-spacing:.24em} }
 </style>
 </head>
@@ -56,6 +92,9 @@
 <div class="vignette"></div>
 <button class="snd" id="snd" aria-label="Background music">
   <span class="eq"><i></i><i></i><i></i></span><span id="sndLabel">Music</span>
+</button>
+<button class="theme" id="theme" aria-label="Change color theme">
+  <span class="sw" id="thSw"></span><span id="thLabel">Pink</span>
 </button>
 
 <div class="hud">
@@ -66,7 +105,7 @@
   </div>
   <div class="bottom">
     <div class="tip" id="tip">Tap the tree &mdash; it <b>blooms</b>, then falls back from the sky</div>
-    <div class="brand">3D Spinning Tree &nbsp;·&nbsp; Pink Edition v23</div>
+    <div class="brand" id="brand">3D Spinning Tree &nbsp;·&nbsp; Swipe to rotate &nbsp;·&nbsp; v24</div>
   </div>
 </div>
 
@@ -103,6 +142,48 @@
     green: glowSprite("120,240,180")
   };
 
+
+  /* ---------- 配色主题 ---------- */
+  var THEMES = [
+    {
+      id: "pink", label: "Pink",
+      swatch: "#ff8fbb",
+      sky: ["#2a0a2c","#6e1444","#c33a76","#f77fa8","#ffc9da"],
+      leaf: [6,72,42], leafHi: [20,134,72],
+      red: [196,22,52], redHi: [242,66,94],
+      starTop: "#ffe45c", starGlow: "255,226,120", starOrn: "#ffd94a",
+      halo: "255,170,210", refl: "255,200,225",
+      snow: "rgba(255,250,253,0.95)",
+      sparkA: [255,214,235], sparkB: [255,196,120],
+      ring: "255,150,200"
+    },
+    {
+      id: "classic", label: "Classic",
+      swatch: "#3bd47f",
+      sky: ["#050a18","#0a1024","#1b1330","#2b1731","#06080f"],
+      leaf: [6,46,30], leafHi: [22,118,68],
+      red: [200,26,46], redHi: [255,80,90],
+      starTop: "#ffe066", starGlow: "255,210,110", starOrn: "#ffcf55",
+      halo: "255,190,130", refl: "255,206,140",
+      snow: "rgba(240,248,255,0.95)",
+      sparkA: [255,232,196], sparkB: [255,198,130],
+      ring: "255,214,150"
+    },
+    {
+      id: "ice", label: "Ice",
+      swatch: "#8fdcff",
+      sky: ["#07203a","#0f3f62","#1f6f93","#8ed0e6","#e8f7ff"],
+      leaf: [8,46,60], leafHi: [30,124,146],
+      red: [146,192,220], redHi: [214,240,255],
+      starTop: "#ffefa8", starGlow: "255,232,160", starOrn: "#ffe98a",
+      halo: "180,225,255", refl: "200,238,255",
+      snow: "rgba(255,255,255,0.95)",
+      sparkA: [214,244,255], sparkB: [255,226,150],
+      ring: "160,220,255"
+    }
+  ];
+  var themeIdx = 0, TH = THEMES[0];
+
   /* ---------- 布局 ---------- */
   function layout(){
     DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -125,7 +206,8 @@
   var foliage = [], lights = [], strand = [], starOrn = [];
   var TIERS = 11;
   var treeRot = 0;
-  var TREE_SPIN = 0.46;          // 弧度/秒
+  var TREE_SPIN = 0.42;          // 自动旋转速度（弧度/秒）
+  var spinAngle = 0, spinVel = 0, pitch = 0.16;
 
   function tierRipple(t){
     var ph = t * Math.PI * TIERS;
@@ -273,7 +355,7 @@
       var ang = -Math.PI*0.5 + (Math.random()-0.5) * 2.4;
       var dist = Math.min(W,H) * (0.16 + Math.random()*0.3);
       burst(cx + Math.cos(ang)*dist, (apexY+baseY)/2 + Math.sin(ang)*dist*0.5,
-            W < 600 ? 26 : 42, b % 2 ? [255,214,235] : [255,196,120]);
+            W < 600 ? 26 : 42, b % 2 ? TH.sparkA : TH.sparkB);
     }
     tipEl.innerHTML = "Blooming &middot; gathering back from the sky";
   }
@@ -300,11 +382,9 @@
   /* ---------- 场景元素 ---------- */
   function drawSky(time){
     var sky = ctx.createLinearGradient(0,0,0,H);
-    sky.addColorStop(0, "#2a0a2c");
-    sky.addColorStop(0.34, "#6e1444");
-    sky.addColorStop(0.58, "#c33a76");
-    sky.addColorStop(0.78, "#f77fa8");
-    sky.addColorStop(1, "#ffc9da");
+    for (var si=0; si<TH.sky.length; si++){
+      sky.addColorStop(si / (TH.sky.length - 1), TH.sky[si]);
+    }
     ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
 
     for (var i=0;i<stars.length;i++){
@@ -317,8 +397,8 @@
 
     var hy = baseY + 24;
     var glow = ctx.createRadialGradient(cx, hy, 8, cx, hy, Math.max(W,H)*0.72);
-    glow.addColorStop(0, "rgba(255,190,220,.18)");
-    glow.addColorStop(0.45, "rgba(255,130,180,.10)");
+    glow.addColorStop(0, "rgba(" + TH.halo + ",.18)");
+    glow.addColorStop(0.45, "rgba(" + TH.halo + ",.10)");
     glow.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
   }
@@ -601,7 +681,7 @@
   }
 
   function drawTree(now, time){
-    treeRot = time * TREE_SPIN;
+    treeRot = spinAngle;
 
     // ---- 针叶（先画背面，再画正面，得到遮挡感） ----
     ctx.globalCompositeOperation = "source-over";
@@ -624,9 +704,15 @@
         if (p.snow){
           ctx.fillStyle = "rgba(255,246,250," + (0.55 * q.a) + ")";
         } else if (p.red){
-          ctx.fillStyle = "rgb(" + Math.round(196 + 46*lit) + "," + Math.round(22 + 44*lit) + "," + Math.round(52 + 42*lit) + ")";
+          ctx.fillStyle = "rgb(" +
+            Math.round(TH.red[0] * (0.82 + 0.18*lit) + TH.redHi[0] * 0.18*lit) + "," +
+            Math.round(TH.red[1] * (0.82 + 0.18*lit) + TH.redHi[1] * 0.18*lit) + "," +
+            Math.round(TH.red[2] * (0.82 + 0.18*lit) + TH.redHi[2] * 0.18*lit) + ")";
         } else {
-          ctx.fillStyle = "rgb(" + Math.round(6 + 14*lit) + "," + Math.round(72 + 62*lit) + "," + Math.round(42 + 30*lit) + ")";
+          ctx.fillStyle = "rgb(" +
+            Math.round(TH.leaf[0] * (0.72 + 0.28*lit) + TH.leafHi[0] * 0.22*lit) + "," +
+            Math.round(TH.leaf[1] * (0.72 + 0.28*lit) + TH.leafHi[1] * 0.22*lit) + "," +
+            Math.round(TH.leaf[2] * (0.72 + 0.28*lit) + TH.leafHi[2] * 0.22*lit) + ")";
         }
         var sz = p.s * pf.sc;
         ctx.beginPath(); ctx.arc(q.x, q.y, sz, 0, Math.PI*2); ctx.fill();
@@ -645,13 +731,13 @@
       ctx.save();
       ctx.globalAlpha = starA;
       var sg = ctx.createRadialGradient(cx, tipY, 0, cx, tipY, starR * 3.1);
-      sg.addColorStop(0, "rgba(255,252,220,.95)");
-      sg.addColorStop(0.28, "rgba(255,226,120,.55)");
-      sg.addColorStop(1, "rgba(255,180,80,0)");
+      sg.addColorStop(0, "rgba(255,252,235,.95)");
+      sg.addColorStop(0.28, "rgba(" + TH.starGlow + ",.55)");
+      sg.addColorStop(1, "rgba(" + TH.starGlow + ",0)");
       ctx.fillStyle = sg;
       ctx.beginPath(); ctx.arc(cx, tipY, starR*3.1, 0, Math.PI*2); ctx.fill();
       ctx.restore();
-      drawStar5(cx, tipY, starR * (1.05 + 0.1*pulse), time * 0.35, starA, "#ffe45c");
+      drawStar5(cx, tipY, starR * (1.05 + 0.1*pulse), time * 0.35, starA, TH.starTop);
       ctx.globalAlpha = 1;
     }
 
@@ -690,7 +776,7 @@
       var tw2 = 0.5 + 0.5 * Math.sin(time * o.sp + o.ph);
       var r2 = o.rd * po.sc * (0.85 + 0.3 * tw2);
       ctx.globalAlpha = 0.55 + 0.45 * tw2;
-      drawStar5(qo.x, qo.y, r2 * 1.9, time * 0.5 + o.ph, 1, "#ffd94a");
+      drawStar5(qo.x, qo.y, r2 * 1.9, time * 0.5 + o.ph, 1, TH.starOrn);
     }
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
@@ -703,9 +789,9 @@
         var rad = rk * Math.max(W,H) * 0.62;
         ctx.globalCompositeOperation = "lighter";
         var rg = ctx.createRadialGradient(cx, bloomMidY, Math.max(1, rad*0.82), cx, bloomMidY, rad);
-        rg.addColorStop(0, "rgba(255,190,225,0)");
-        rg.addColorStop(0.7, "rgba(255,150,200," + (0.42*(1-rk)) + ")");
-        rg.addColorStop(1, "rgba(255,120,170,0)");
+        rg.addColorStop(0, "rgba(" + TH.ring + ",0)");
+        rg.addColorStop(0.7, "rgba(" + TH.ring + "," + (0.42*(1-rk)) + ")");
+        rg.addColorStop(1, "rgba(" + TH.ring + ",0)");
         ctx.fillStyle = rg;
         ctx.beginPath(); ctx.arc(cx, bloomMidY, rad, 0, Math.PI*2); ctx.fill();
         ctx.globalCompositeOperation = "source-over";
@@ -740,7 +826,7 @@
       if (f.y > H + 6){ f.y = -8; f.x = Math.random() * W; }
       if (f.x < -8) f.x = W + 8; else if (f.x > W + 8) f.x = -8;
       ctx.globalAlpha = f.a;
-      ctx.fillStyle = "rgba(255,250,253,0.95)";
+      ctx.fillStyle = TH.snow;
       ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
     }
     ctx.globalAlpha = 1;
@@ -754,6 +840,9 @@
     var time = (ts - t0) / 1000;
     var dt = lastTs ? Math.min(0.05, (ts - lastTs) / 1000) : 0.016;
     lastTs = ts;
+    spinVel *= 0.92;
+    if (Math.abs(spinVel) < 0.05) spinVel = 0;
+    spinAngle += (TREE_SPIN + spinVel) * dt;
 
     if (phase === "bloom" && ts - bloomT0 > BLOOM_END){
       startGather(ts, 1500);
@@ -778,14 +867,14 @@
 
     // 地面反光
     var refl = ctx.createRadialGradient(cx, baseY + 10, 4, cx, baseY + 10, baseR * 2.1);
-    refl.addColorStop(0, "rgba(255,200,225,.20)");
+    refl.addColorStop(0, "rgba(" + TH.refl + ",.20)");
     refl.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = refl;
     ctx.beginPath(); ctx.ellipse(cx, baseY + 10, baseR * 2.1, baseR * 0.5, 0, 0, Math.PI*2); ctx.fill();
 
     // 树光晕
     var halo = ctx.createRadialGradient(cx, (apexY+baseY)/2, 8, cx, (apexY+baseY)/2, baseR*1.65);
-    halo.addColorStop(0, "rgba(255,170,210,.20)");
+    halo.addColorStop(0, "rgba(" + TH.halo + ",.20)");
     halo.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = halo; ctx.fillRect(0,0,W,H);
 
@@ -996,6 +1085,27 @@
   }
   var everPlayed = false;
   syncSnd();
+
+  /* ---- 配色按钮 ---- */
+  var themeBtn = document.getElementById("theme");
+  var thSw = document.getElementById("thSw");
+  var thLabel = document.getElementById("thLabel");
+  function applyTheme(idx){
+    themeIdx = ((idx % THEMES.length) + THEMES.length) % THEMES.length;
+    TH = THEMES[themeIdx];
+    document.body.className = "theme-" + TH.id;
+    thSw.style.background = TH.swatch;
+    thSw.style.color = TH.swatch;
+    thLabel.textContent = TH.label;
+    try { localStorage.setItem("christmas_theme", String(themeIdx)); } catch(e){}
+  }
+  var savedTheme = 0;
+  try { var sv = localStorage.getItem("christmas_theme"); if (sv !== null) savedTheme = parseInt(sv, 10) || 0; } catch(e){}
+  applyTheme(savedTheme);
+  themeBtn.addEventListener("click", function(ev){
+    ev.stopPropagation();
+    applyTheme(themeIdx + 1);
+  });
   Music.probeNow(function(src){
     if (src){
       Music.setSrc(src);
@@ -1014,11 +1124,36 @@
   });
 
   var firstGesture = true;
+  var drag = { down:false, sx:0, sy:0, lx:0, ly:0, moved:false, t0:0, vx:0 };
+  function isBtn(t){ return t && t.closest && (t.closest("#snd") || t.closest("#theme")); }
+
   window.addEventListener("pointerdown", function(ev){
-    if (ev.target && ev.target.closest && ev.target.closest("#snd")) return;
+    if (isBtn(ev.target)) return;
     if (firstGesture){ firstGesture = false; if (musicWanted){ Music.auto(); everPlayed = true; } syncSnd(); }
-    if (phase !== "bloom") bloom(performance.now());
+    drag.down = true; drag.moved = false;
+    drag.sx = drag.lx = ev.clientX;
+    drag.sy = drag.ly = ev.clientY;
+    drag.t0 = performance.now(); drag.vx = 0;
   }, true);
+
+  window.addEventListener("pointermove", function(ev){
+    if (!drag.down) return;
+    var dx = ev.clientX - drag.lx, dy = ev.clientY - drag.ly;
+    drag.lx = ev.clientX; drag.ly = ev.clientY;
+    if (!drag.moved && Math.abs(ev.clientX - drag.sx) + Math.abs(ev.clientY - drag.sy) > 6) drag.moved = true;
+    if (!drag.moved) return;
+    spinAngle -= dx * 0.0062;
+    spinVel = -dx * 0.09;                 // 松手后的惯性
+    pitch = Math.max(-0.16, Math.min(0.62, pitch + dy * 0.0032));
+  }, true);
+
+  window.addEventListener("pointerup", function(ev){
+    if (!drag.down) return;
+    drag.down = false;
+    var quick = performance.now() - drag.t0 < 480;
+    if (!drag.moved && quick && phase !== "bloom") bloom(performance.now());
+  }, true);
+  window.addEventListener("pointercancel", function(){ drag.down = false; });
   window.addEventListener("resize", layout);
   window.addEventListener("orientationchange", function(){ setTimeout(layout, 180); });
 
