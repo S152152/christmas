@@ -1,41 +1,45 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#03060c" />
-<title>Bava，2026 圣诞快乐 · Hollywood × Disneyland</title>
+<meta name="theme-color" content="#ffc9da" />
+<title>Bava · Merry Christmas 2026 · Hollywood × Disneyland</title>
 <style>
-  :root{ --gold:#ffd08a; --gold-soft:rgba(255,208,138,.35); --ink:#f7faff; --dim:#9fb2cd; }
+  :root{ --pink:#ff9dc2; --pink-deep:#8d1147; --gold:#ffdf6b; --gold-soft:rgba(255,214,150,.32); --ink:#fff4f8; --dim:#ffd8e6; }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:#03060c;overflow:hidden}
+  html,body{height:100%;margin:0;background:#ffc9da;overflow:hidden}
   body{
     font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
     color:var(--ink);-webkit-tap-highlight-color:transparent;user-select:none;
   }
   #scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
   .vignette{position:fixed;inset:0;pointer-events:none;
-    background:radial-gradient(120% 92% at 50% 44%, transparent 50%, rgba(0,0,0,.66) 100%);}
+    background:radial-gradient(120% 92% at 50% 44%, transparent 46%, rgba(112,8,54,.55) 100%);}
   .hud{position:fixed;inset:0;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between}
   .top{padding:clamp(16px,4.4vh,42px) 16px 0;text-align:center}
   .top h1{
     margin:0;font-weight:600;letter-spacing:.11em;
     font-size:clamp(17px,3.1vw,33px);
-    text-shadow:0 0 20px var(--gold-soft),0 0 60px rgba(255,255,255,.10);
+    color:#fff6fa;
+    text-shadow:0 0 18px rgba(255,150,200,.55),0 2px 26px rgba(120,8,52,.55);
   }
-  .top .sub{margin-top:.85em;font-size:clamp(9px,1.15vw,12px);letter-spacing:.38em;color:var(--dim);text-transform:uppercase}
+  .top .sub{margin-top:.85em;font-size:clamp(9px,1.15vw,12px);letter-spacing:.38em;color:#ffd3e4;text-transform:uppercase}
   .top .line{margin:10px auto 0;width:min(320px,52vw);height:1px;
-    background:linear-gradient(90deg,transparent,rgba(255,208,138,.55),transparent)}
+    background:linear-gradient(90deg,transparent,rgba(255,224,120,.7),transparent)}
   .bottom{padding:0 16px clamp(16px,4vh,34px);text-align:center}
-  .tip{font-size:clamp(11px,1.5vw,13px);color:#b3c3da;letter-spacing:.08em}
-  .tip b{color:var(--gold);font-weight:600}
+  .tip{font-size:clamp(11px,1.5vw,13px);color:#ffe1ec;letter-spacing:.06em;text-shadow:0 1px 12px rgba(90,6,40,.8)}
+  .tip b{color:#ffe45c;font-weight:600}
   .snd{position:fixed;top:18px;right:18px;z-index:9;pointer-events:auto;cursor:pointer;
       display:flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;
-      border:1px solid rgba(255,214,160,.34);background:rgba(12,16,28,.55);
-      color:#e8d8bd;font-size:12px;letter-spacing:.12em;backdrop-filter:blur(6px);
+      border:1px solid rgba(255,226,150,.55);background:rgba(122,10,55,.42);
+      color:#fff0f6;font-size:12px;letter-spacing:.12em;backdrop-filter:blur(6px);
       transition:border-color .25s,box-shadow .25s,color .25s}
-  .snd:hover{border-color:rgba(255,214,160,.7);box-shadow:0 0 18px rgba(255,190,120,.18)}
-  .snd.on{color:#ffd9a6;border-color:rgba(255,205,140,.75);box-shadow:0 0 22px rgba(255,190,120,.28)}
+  @media (max-width:700px){
+    .snd{top:auto;bottom:calc(env(safe-area-inset-bottom,0px) + 78px);right:14px;padding:6px 11px;font-size:11px}
+  }
+  .snd:hover{border-color:rgba(255,240,180,.95);box-shadow:0 0 20px rgba(255,220,140,.35)}
+  .snd.on{color:#fff8d4;border-color:rgba(255,232,140,.95);box-shadow:0 0 24px rgba(255,226,120,.45)}
   .snd .eq{display:inline-flex;gap:2px;align-items:flex-end;height:11px}
   .snd .eq i{width:2px;background:currentColor;opacity:.75;border-radius:1px}
   .snd.on .eq i{animation:eq .9s ease-in-out infinite}
@@ -43,26 +47,26 @@
   .snd .eq i:nth-child(2){height:11px;animation-delay:.18s}
   .snd .eq i:nth-child(3){height:7px;animation-delay:.36s}
   @keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
-  .brand{margin-top:8px;font-size:clamp(9px,1.05vw,11px);letter-spacing:.26em;color:#5d6f8c;text-transform:uppercase}
+  .brand{margin-top:8px;font-size:clamp(9px,1.05vw,11px);letter-spacing:.26em;color:#e7a9c6;text-transform:uppercase}
   @media (max-width:520px){ .top h1{letter-spacing:.04em} .top .sub{letter-spacing:.24em} }
 </style>
 </head>
 <body>
 <canvas id="scene"></canvas>
 <div class="vignette"></div>
-<button class="snd" id="snd" aria-label="背景音乐">
-  <span class="eq"><i></i><i></i><i></i></span><span id="sndLabel">音乐</span>
+<button class="snd" id="snd" aria-label="Background music">
+  <span class="eq"><i></i><i></i><i></i></span><span id="sndLabel">Music</span>
 </button>
 
 <div class="hud">
   <div class="top">
-    <h1>Bava 祝你 2026 圣诞节快乐</h1>
-    <div class="sub">Hollywood &nbsp;·&nbsp; Los Angeles &nbsp;·&nbsp; Disneyland</div>
+    <h1>Bava Wishes You a Merry Christmas</h1>
+    <div class="sub">Hollywood &nbsp;·&nbsp; Los Angeles &nbsp;·&nbsp; Disneyland &nbsp;·&nbsp; 2026</div>
     <div class="line"></div>
   </div>
   <div class="bottom">
-    <div class="tip" id="tip">点击这棵树，让它<b>绽放</b>，再从天而降拼合</div>
-    <div class="brand">Rockefeller Style &nbsp;·&nbsp; L.A. Edition v21</div>
+    <div class="tip" id="tip">Tap the tree &mdash; it <b>blooms</b>, then falls back from the sky</div>
+    <div class="brand">3D Spinning Tree &nbsp;·&nbsp; Pink Edition v23</div>
   </div>
 </div>
 
@@ -117,86 +121,116 @@
     startGather(performance.now(), 1600);
   }
 
-  /* ---------- 树（洛克菲勒式：圆锥 + 分层枝叶 + 暖灯） ---------- */
-  var foliage = [], lights = [], strand = [];
+  /* ---------- 3D 圣诞树：圆锥点云，绕竖轴旋转 ---------- */
+  var foliage = [], lights = [], strand = [], starOrn = [];
   var TIERS = 11;
+  var treeRot = 0;
+  var TREE_SPIN = 0.46;          // 弧度/秒
 
   function tierRipple(t){
-    // 分层感：每层下缘略微外扩
     var ph = t * Math.PI * TIERS;
     return 1 + 0.055 * Math.sin(ph) + 0.02 * Math.sin(ph * 2.3);
   }
+  function radiusAt(t){ return baseR * (1 - t) * tierRipple(t); }
 
   function buildTree(){
-    foliage.length = 0; lights.length = 0; strand.length = 0;
+    foliage.length = 0; lights.length = 0; strand.length = 0; starOrn.length = 0;
 
-    var NF = Math.round(Math.min(9200, Math.max(3000, W * H / 135)));
+    // 针叶：绿 + 红 双色，越靠外越亮
+    var NF = Math.round(Math.min(9000, Math.max(portrait ? 4200 : 3000, W * H / 128)));
     for (var i=0;i<NF;i++){
-      var t = Math.pow(Math.random(), 0.58);
-      var y = baseY - t * treeH;
-      var r = baseR * (1 - t) * tierRipple(t);
-      var ang = Math.random() * Math.PI * 2;
-      var rr = r * (0.50 + 0.50 * Math.pow(Math.random(), 0.7));
-      var depth = Math.cos(ang);                 // 1 = 前
-      var shade = 0.5 + 0.5 * depth;
+      var t = Math.pow(Math.random(), 0.6);
+      var rr = radiusAt(t) * (0.52 + 0.48 * Math.pow(Math.random(), 0.55));
       foliage.push({
-        bx: cx + Math.sin(ang) * rr,
-        by: y + (Math.random() - 0.5) * 8,
-        z: shade,
-        s: (0.6 + Math.random() * 1.5) * (0.55 + 0.45 * shade),
+        t: t, r: rr,
+        ang: Math.random() * Math.PI * 2,
+        s: 0.8 + Math.random() * 1.6,
+        red: Math.random() < 0.11,
         ph: Math.random() * Math.PI * 2,
-        t: t,
-        col: [
-          14 + Math.round(26 * shade),
-          46 + Math.round(68 * shade),
-          32 + Math.round(44 * shade)
-        ],
-        snow: Math.random() < 0.05
+        snow: Math.random() < 0.04
       });
     }
 
-    // 暖灯：金 / 暖白 / 少量红蓝
-    var NL = Math.round(Math.min(300, Math.max(150, W * H / 6500)));
+    // 灯泡：暖金 + 红
+    var NL = Math.round(Math.min(260, Math.max(120, W * H / 7000)));
     for (var j=0;j<NL;j++){
-      var tl = Math.pow(Math.random(), 0.75);
-      var yl = baseY - tl * treeH;
-      var rl = baseR * (1 - tl) * tierRipple(tl);
-      var al = Math.random() * Math.PI * 2;
-      var rrh = rl * (0.88 + Math.random() * 0.14);
+      var tl = Math.pow(Math.random(), 0.7);
       var kindRoll = Math.random();
-      var kind = kindRoll < 0.55 ? "gold" : kindRoll < 0.87 ? "warm" : kindRoll < 0.95 ? "red" : "blue";
       lights.push({
-        bx: cx + Math.sin(al) * rrh,
-        by: yl + (Math.random() - 0.5) * 6,
-        r: (1.7 + Math.random() * 1.8),
-        kind: kind,
+        t: tl,
+        r: radiusAt(tl) * (0.9 + Math.random() * 0.12),
+        ang: Math.random() * Math.PI * 2,
+        rd: 1.7 + Math.random() * 1.7,
+        kind: kindRoll < 0.34 ? "gold" : kindRoll < 0.56 ? "warm" : "red",
         ph: Math.random() * Math.PI * 2,
-        sp: 0.8 + Math.random() * 1.6,
-        t: tl
+        sp: 0.9 + Math.random() * 1.7
       });
     }
 
-    // 一条螺旋灯串（沿树体盘绕）
-    var turns = 9, per = 40;
+    // 红色螺旋彩带
+    var turns = 8, per = 34;
     for (var k=0; k<turns*per; k++){
       var tk = k / (turns*per);
-      var ak = tk * turns * Math.PI * 2;
-      var rk = baseR * (1 - tk) * 1.0;
       strand.push({
-        bx: cx + Math.sin(ak) * rk,
-        by: baseY - tk * treeH,
-        r: 2.6,
+        t: tk,
+        r: radiusAt(tk) * 1.02,
+        ang: tk * turns * Math.PI * 2,
+        rd: 2.5,
         ph: Math.random() * Math.PI * 2,
-        sp: 1.2 + Math.random() * 1.2,
-        t: tk
+        sp: 1.0 + Math.random() * 1.2
       });
     }
+
+    // 树上的黄色五角星
+    var NS = Math.round(Math.min(34, Math.max(16, W * H / 42000)));
+    for (var m=0;m<NS;m++){
+      var tm = 0.06 + Math.random() * 0.88;
+      starOrn.push({
+        t: tm,
+        r: radiusAt(tm) * 0.99,
+        ang: Math.random() * Math.PI * 2,
+        rd: 2.6 + Math.random() * 2.4,
+        ph: Math.random() * Math.PI * 2,
+        sp: 0.7 + Math.random() * 1.3
+      });
+    }
+  }
+
+  // 3D -> 屏幕：绕 y 轴旋转 + 轻微俯视角
+  function project(it){
+    var a = it.ang + treeRot;
+    var d = Math.cos(a);                   // 1 = 正对观众
+    var sc = 0.78 + 0.22 * ((d + 1) / 2);
+    return {
+      x: cx + Math.sin(a) * it.r,
+      y: baseY - it.t * treeH - d * it.r * 0.20,
+      d: d,
+      sc: sc
+    };
+  }
+
+  function drawStar5(x, y, r, rot, alpha, col){
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(rot);
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    for (var i=0;i<5;i++){
+      var a1 = -Math.PI/2 + i * Math.PI*2/5;
+      var a2 = a1 + Math.PI/5;
+      ctx.lineTo(Math.cos(a1)*r, Math.sin(a1)*r);
+      ctx.lineTo(Math.cos(a2)*r*0.44, Math.sin(a2)*r*0.44);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
   }
 
   /* ---------- 星空 ---------- */
   var stars = [];
   function buildSky(){
     stars.length = 0;
+    buildSnow();
     var n = Math.round(W * H / 12000);
     for (var i=0;i<n;i++){
       stars.push({
@@ -217,38 +251,31 @@
     phase = "gather"; phaseT0 = now; gatherDur = dur || 1500;
   }
 
+  var bloomMidY = 0;
   function bloom(now){
     phase = "bloom"; bloomT0 = now;
-    for (var i=0;i<foliage.length;i++){
-      var p = foliage[i];
-      var dx = p.bx - cx, dy = p.by - (apexY + treeH * 0.42);
-      var len = Math.max(1, Math.sqrt(dx*dx + dy*dy));
-      var spd = 120 + Math.random() * 320;
-      p.bvx = dx / len; p.bvy = dy / len - 0.28;
-      p.bspd = spd;
+    bloomMidY = apexY + treeH * 0.42;
+    function aim(list, base){
+      for (var i=0;i<list.length;i++){
+        var p = list[i], pr = project(p);
+        var dx = pr.x - cx, dy = pr.y - bloomMidY;
+        var len = Math.max(1, Math.sqrt(dx*dx + dy*dy));
+        p.bvx = dx / len; p.bvy = dy / len - 0.28;
+        p.bspd = base + Math.random() * 220;
+      }
     }
-    for (var j=0;j<lights.length;j++){
-      var l = lights[j];
-      var lx = l.bx - cx, ly = l.by - (apexY + treeH * 0.42);
-      var ll = Math.max(1, Math.sqrt(lx*lx + ly*ly));
-      l.bvx = lx / ll; l.bvy = ly / ll - 0.3;
-      l.bspd = 140 + Math.random() * 340;
-    }
-    for (var s=0;s<strand.length;s++){
-      var q = strand[s];
-      var qx = q.bx - cx, qy = q.by - (apexY + treeH * 0.42);
-      var ql = Math.max(1, Math.sqrt(qx*qx + qy*qy));
-      q.bvx = qx / ql; q.bvy = qy / ql - 0.3;
-      q.bspd = 150 + Math.random() * 330;
-    }
+    aim(foliage, 130);
+    aim(lights, 150);
+    aim(strand, 160);
+    aim(starOrn, 140);
     var n = W < 600 ? 3 : 5;
     for (var b=0;b<n;b++){
       var ang = -Math.PI*0.5 + (Math.random()-0.5) * 2.4;
       var dist = Math.min(W,H) * (0.16 + Math.random()*0.3);
       burst(cx + Math.cos(ang)*dist, (apexY+baseY)/2 + Math.sin(ang)*dist*0.5,
-            W < 600 ? 26 : 42, b % 2 ? [255,232,196] : [255,198,130]);
+            W < 600 ? 26 : 42, b % 2 ? [255,214,235] : [255,196,120]);
     }
-    tipEl.innerHTML = "绽放中 · 稍后从天而降拼合";
+    tipEl.innerHTML = "Blooming &middot; gathering back from the sky";
   }
 
   /* ---------- 烟花 ---------- */
@@ -273,25 +300,25 @@
   /* ---------- 场景元素 ---------- */
   function drawSky(time){
     var sky = ctx.createLinearGradient(0,0,0,H);
-    sky.addColorStop(0, "#050a18");
-    sky.addColorStop(0.40, "#0a1024");
-    sky.addColorStop(0.64, "#1b1330");
-    sky.addColorStop(0.82, "#2b1731");
-    sky.addColorStop(1, "#06080f");
+    sky.addColorStop(0, "#2a0a2c");
+    sky.addColorStop(0.34, "#6e1444");
+    sky.addColorStop(0.58, "#c33a76");
+    sky.addColorStop(0.78, "#f77fa8");
+    sky.addColorStop(1, "#ffc9da");
     ctx.fillStyle = sky; ctx.fillRect(0,0,W,H);
 
     for (var i=0;i<stars.length;i++){
       var s = stars[i];
       ctx.globalAlpha = 0.2 + 0.6 * (0.5 + 0.5*Math.sin(time*s.sp + s.ph));
-      ctx.fillStyle = "#dcebff";
+      ctx.fillStyle = "#fff2f7";
       ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
     }
     ctx.globalAlpha = 1;
 
     var hy = baseY + 24;
     var glow = ctx.createRadialGradient(cx, hy, 8, cx, hy, Math.max(W,H)*0.72);
-    glow.addColorStop(0, "rgba(255,150,90,.15)");
-    glow.addColorStop(0.45, "rgba(170,90,150,.10)");
+    glow.addColorStop(0, "rgba(255,190,220,.18)");
+    glow.addColorStop(0.45, "rgba(255,130,180,.10)");
     glow.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
   }
@@ -522,105 +549,148 @@
   }
 
   /* ---------- 绘制一棵树（含状态动画） ---------- */
-  function drawTree(now, time){
-    var be = phase === "bloom" ? (now - bloomT0) : 0;
-
-    function posFor(item, delayBase){
-      if (phase === "gather"){
-        var delay = (1 - item.t) * delayBase; // 顶部先落
-        var pr = Math.min(1, Math.max(0, (now - phaseT0 - delay) / gatherDur));
-        if (pr <= 0) return null;
-        var e = easeOutCubic(pr);
-        var startY = item.by - (H * 0.95);
-        var y = startY + (item.by - startY) * e;
-        var x = item.bx + Math.sin(pr * Math.PI * 1.2 + item.ph) * 16 * (1 - pr);
-        return {x: x, y: y, a: 0.25 + 0.75 * pr};
-      }
-      if (phase === "bloom"){
-        var k = Math.min(1, be / BLOOM_OUT);
-        var ek = easeOutCubic(k);
-        var d = (item.bspd || 200) * ek;
-        var out = be / BLOOM_END;
-        var a = out < 0.62 ? 1 : Math.max(0, 1 - (out - 0.62) / 0.38);
-        return {
-          x: item.bx + (item.bvx || 0) * d,
-          y: item.by + (item.bvy || 0) * d,
-          a: a
-        };
-      }
-      return {x: item.bx, y: item.by, a: 1};
+  function posFor(pf, it, delayBase, now){
+    if (phase === "gather"){
+      var delay = (1 - it.t) * delayBase;
+      var pr = Math.min(1, Math.max(0, (now - phaseT0 - delay) / gatherDur));
+      if (pr <= 0) return null;
+      var e = easeOutCubic(pr);
+      var startY = pf.y - H * 0.95;
+      return {
+        x: pf.x + Math.sin(pr * Math.PI * 1.2 + it.ph) * 16 * (1 - pr),
+        y: startY + (pf.y - startY) * e,
+        a: 0.25 + 0.75 * pr,
+        fresh: pr < 0.999
+      };
     }
+    if (phase === "bloom"){
+      var be = now - bloomT0;
+      var k = Math.min(1, be / BLOOM_OUT);
+      var d = (it.bspd || 200) * easeOutCubic(k);
+      var out = be / BLOOM_END;
+      return {
+        x: pf.x + (it.bvx || 0) * d,
+        y: pf.y + (it.bvy || 0) * d,
+        a: out < 0.62 ? 1 : Math.max(0, 1 - (out - 0.62) / 0.38),
+        fresh: false
+      };
+    }
+    return {x: pf.x, y: pf.y, a: 1, fresh: false};
+  }
 
-    // ---- 枝叶 ----
+  function drawTreeBody(){
+    ctx.save();
     ctx.globalCompositeOperation = "source-over";
-    for (var i=0;i<foliage.length;i++){
-      var p = foliage[i];
-      var q = posFor(p, 1050);
-      if (!q) continue;
-      if (phase === "gather" && q.a < 0.98){
-        ctx.globalAlpha = 0.22 * q.a;
-        ctx.strokeStyle = "rgba(190,225,255,0.6)";
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(q.x, q.y - 16); ctx.lineTo(q.x, q.y); ctx.stroke();
+    var g = ctx.createRadialGradient(cx, apexY + treeH * 0.55, baseR * 0.1, cx, apexY + treeH * 0.55, baseR * 1.25);
+    g.addColorStop(0, "rgba(10,64,42,0.55)");
+    g.addColorStop(0.55, "rgba(8,52,34,0.42)");
+    g.addColorStop(1, "rgba(6,38,26,0.18)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.moveTo(cx, apexY);
+    ctx.bezierCurveTo(cx + baseR * 0.42, apexY + treeH * 0.42,
+                      cx + baseR * 0.94, apexY + treeH * 0.82,
+                      cx + baseR, baseY);
+    ctx.lineTo(cx - baseR, baseY);
+    ctx.bezierCurveTo(cx - baseR * 0.94, apexY + treeH * 0.82,
+                      cx - baseR * 0.42, apexY + treeH * 0.42,
+                      cx, apexY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawTree(now, time){
+    treeRot = time * TREE_SPIN;
+
+    // ---- 针叶（先画背面，再画正面，得到遮挡感） ----
+    ctx.globalCompositeOperation = "source-over";
+    for (var pass = 0; pass < 2; pass++){
+      for (var i=0;i<foliage.length;i++){
+        var p = foliage[i];
+        var pf = project(p);
+        if (pass === 0 ? pf.d >= 0 : pf.d < 0) continue;
+        var q = posFor(pf, p, 1050, now);
+        if (!q) continue;
+
+        if (q.fresh){
+          ctx.globalAlpha = 0.2 * q.a;
+          ctx.strokeStyle = "rgba(255,225,240,0.55)";
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(q.x, q.y - 15); ctx.lineTo(q.x, q.y); ctx.stroke();
+        }
+        var lit = 0.55 + 0.45 * ((pf.d + 1) / 2);
+        ctx.globalAlpha = q.a * (0.84 + 0.16 * lit);
+        if (p.snow){
+          ctx.fillStyle = "rgba(255,246,250," + (0.55 * q.a) + ")";
+        } else if (p.red){
+          ctx.fillStyle = "rgb(" + Math.round(196 + 46*lit) + "," + Math.round(22 + 44*lit) + "," + Math.round(52 + 42*lit) + ")";
+        } else {
+          ctx.fillStyle = "rgb(" + Math.round(6 + 14*lit) + "," + Math.round(72 + 62*lit) + "," + Math.round(42 + 30*lit) + ")";
+        }
+        var sz = p.s * pf.sc;
+        ctx.beginPath(); ctx.arc(q.x, q.y, sz, 0, Math.PI*2); ctx.fill();
       }
-      ctx.globalAlpha = q.a * (0.55 + 0.45 * p.z);
-      if (p.snow){
-        ctx.fillStyle = "rgba(226,242,255," + (0.5 * q.a) + ")";
-      } else {
-        ctx.fillStyle = "rgb(" + p.col[0] + "," + p.col[1] + "," + p.col[2] + ")";
-      }
-      ctx.beginPath(); ctx.arc(q.x, q.y, p.s, 0, Math.PI*2); ctx.fill();
     }
     ctx.globalAlpha = 1;
 
-    // ---- 顶星 ----
-    var pulse = 0.5 + 0.5*Math.sin(time*2.0);
-    var starR = Math.max(11, Math.min(30, baseR * 0.12));
+    // ---- 顶星（黄色五角星） ----
+    var pulse = 0.5 + 0.5 * Math.sin(time * 2.0);
+    var starR = Math.max(12, Math.min(32, baseR * 0.13));
     var starA = phase === "gather"
       ? Math.min(1, Math.max(0, (now - phaseT0) / 600))
-      : (phase === "bloom" ? Math.max(0, 1 - (now - bloomT0)/900) : 1);
+      : (phase === "bloom" ? Math.max(0, 1 - (now - bloomT0) / 900) : 1);
     if (starA > 0){
+      var tipY = apexY - starR * 0.55;
       ctx.save();
-      ctx.translate(cx, apexY - starR*0.15);
       ctx.globalAlpha = starA;
-      var sg = ctx.createRadialGradient(0,0,0, 0,0, starR*2.8);
-      sg.addColorStop(0, "rgba(255,255,245,.95)");
-      sg.addColorStop(0.3, "rgba(255,226,160,.5)");
+      var sg = ctx.createRadialGradient(cx, tipY, 0, cx, tipY, starR * 3.1);
+      sg.addColorStop(0, "rgba(255,252,220,.95)");
+      sg.addColorStop(0.28, "rgba(255,226,120,.55)");
       sg.addColorStop(1, "rgba(255,180,80,0)");
       ctx.fillStyle = sg;
-      ctx.beginPath(); ctx.arc(0,0, starR*2.8, 0, Math.PI*2); ctx.fill();
-      for (var s=0;s<8;s++){
-        var a = s * Math.PI/4 + time*0.06;
-        var len = starR * (s%2 ? 1.2 : 2.7);
-        ctx.strokeStyle = "rgba(255,248,225," + (0.35 + 0.45*pulse) + ")";
-        ctx.lineWidth = Math.max(1, starR*0.04);
-        ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*len, Math.sin(a)*len); ctx.stroke();
-      }
+      ctx.beginPath(); ctx.arc(cx, tipY, starR*3.1, 0, Math.PI*2); ctx.fill();
       ctx.restore();
+      drawStar5(cx, tipY, starR * (1.05 + 0.1*pulse), time * 0.35, starA, "#ffe45c");
+      ctx.globalAlpha = 1;
     }
 
-    // ---- 暖灯 ----
+    // ---- 灯泡 ----
     ctx.globalCompositeOperation = "lighter";
     for (var j=0;j<lights.length;j++){
       var l = lights[j];
-      var ql = posFor(l, 1000);
+      var pl = project(l);
+      var ql = posFor(pl, l, 1000, now);
       if (!ql) continue;
       var tw = 0.55 + 0.45 * Math.sin(time * l.sp + l.ph);
       var sp = SPR[l.kind] || SPR.gold;
-      var size = (l.r * 2.15) * (1 + 0.12 * tw);
-      ctx.globalAlpha = ql.a * (0.38 + 0.34 * tw);
+      var size = l.rd * 1.95 * pl.sc * (1 + 0.12 * tw);
+      ctx.globalAlpha = ql.a * (0.40 + 0.34 * tw) * (0.7 + 0.3 * ((pl.d + 1) / 2));
       ctx.drawImage(sp, ql.x - size, ql.y - size, size*2, size*2);
     }
 
-    // ---- 螺旋灯串 ----
+    // ---- 红色螺旋彩带 ----
     for (var k=0;k<strand.length;k++){
       var q2 = strand[k];
-      var qp = posFor(q2, 1000);
+      var p2 = project(q2);
+      var qp = posFor(p2, q2, 1000, now);
       if (!qp) continue;
-      var stw = 0.5 + 0.5*Math.sin(time * q2.sp + q2.ph);
-      var ssize = q2.r * 2.2 * (0.8 + 0.4*stw);
-      ctx.globalAlpha = qp.a * (0.22 + 0.38*stw);
-      ctx.drawImage(SPR.gold, qp.x - ssize, qp.y - ssize, ssize*2, ssize*2);
+      var stw = 0.5 + 0.5 * Math.sin(time * q2.sp + q2.ph);
+      var ssize = q2.rd * 2.1 * p2.sc * (0.8 + 0.4 * stw);
+      ctx.globalAlpha = qp.a * (0.3 + 0.4 * stw) * (0.7 + 0.3 * ((p2.d + 1) / 2));
+      ctx.drawImage(SPR.red, qp.x - ssize, qp.y - ssize, ssize*2, ssize*2);
+    }
+
+    // ---- 黄色小星星挂饰 ----
+    for (var m=0;m<starOrn.length;m++){
+      var o = starOrn[m];
+      var po = project(o);
+      var qo = posFor(po, o, 1000, now);
+      if (!qo) continue;
+      var tw2 = 0.5 + 0.5 * Math.sin(time * o.sp + o.ph);
+      var r2 = o.rd * po.sc * (0.85 + 0.3 * tw2);
+      ctx.globalAlpha = 0.55 + 0.45 * tw2;
+      drawStar5(qo.x, qo.y, r2 * 1.9, time * 0.5 + o.ph, 1, "#ffd94a");
     }
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = "source-over";
@@ -630,32 +700,68 @@
       var ee = now - bloomT0;
       if (ee < 900){
         var rk = easeOutCubic(ee / 900);
-        var rad = rk * Math.max(W,H) * 0.6;
+        var rad = rk * Math.max(W,H) * 0.62;
         ctx.globalCompositeOperation = "lighter";
-        var rg = ctx.createRadialGradient(cx, apexY + treeH*0.42, Math.max(1, rad*0.84),
-                                          cx, apexY + treeH*0.42, rad);
-        rg.addColorStop(0, "rgba(255,220,160,0)");
-        rg.addColorStop(0.7, "rgba(255,214,150," + (0.5*(1-rk)) + ")");
-        rg.addColorStop(1, "rgba(255,170,90,0)");
+        var rg = ctx.createRadialGradient(cx, bloomMidY, Math.max(1, rad*0.82), cx, bloomMidY, rad);
+        rg.addColorStop(0, "rgba(255,190,225,0)");
+        rg.addColorStop(0.7, "rgba(255,150,200," + (0.42*(1-rk)) + ")");
+        rg.addColorStop(1, "rgba(255,120,170,0)");
         ctx.fillStyle = rg;
-        ctx.beginPath(); ctx.arc(cx, apexY + treeH*0.42, rad, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.arc(cx, bloomMidY, rad, 0, Math.PI*2); ctx.fill();
         ctx.globalCompositeOperation = "source-over";
       }
     }
   }
 
+  /* ---------- 雪 ---------- */
+  var snowflakes = [];
+  function buildSnow(){
+    snowflakes.length = 0;
+    var n = Math.round(Math.min(240, Math.max(90, W * H / 9000)));
+    for (var i=0;i<n;i++){
+      snowflakes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: 0.7 + Math.random() * 1.9,
+        vy: 22 + Math.random() * 62,
+        vx: -14 + Math.random() * 28,
+        ph: Math.random() * Math.PI * 2,
+        sw: 0.6 + Math.random() * 1.4,
+        a: 0.35 + Math.random() * 0.55
+      });
+    }
+  }
+  function drawSnow(dt, time){
+    ctx.globalCompositeOperation = "source-over";
+    for (var i=0;i<snowflakes.length;i++){
+      var f = snowflakes[i];
+      f.y += f.vy * dt;
+      f.x += (f.vx + Math.sin(time * f.sw + f.ph) * 12) * dt;
+      if (f.y > H + 6){ f.y = -8; f.x = Math.random() * W; }
+      if (f.x < -8) f.x = W + 8; else if (f.x > W + 8) f.x = -8;
+      ctx.globalAlpha = f.a;
+      ctx.fillStyle = "rgba(255,250,253,0.95)";
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
   /* ---------- 主循环 ---------- */
   var t0 = 0;
+  var lastTs = 0;
   function frame(ts){
     if (!t0) t0 = ts;
     var time = (ts - t0) / 1000;
+    var dt = lastTs ? Math.min(0.05, (ts - lastTs) / 1000) : 0.016;
+    lastTs = ts;
 
     if (phase === "bloom" && ts - bloomT0 > BLOOM_END){
       startGather(ts, 1500);
-      tipEl.innerHTML = "从天而降，重新拼成一棵树";
+      tipEl.innerHTML = "Falling from the sky &mdash; one sparkle at a time";
     }
 
     drawSky(time);
+    drawSnow(dt, time);
     drawHills();
     drawSkyline();
 
@@ -672,14 +778,14 @@
 
     // 地面反光
     var refl = ctx.createRadialGradient(cx, baseY + 10, 4, cx, baseY + 10, baseR * 2.1);
-    refl.addColorStop(0, "rgba(255,206,140,.15)");
+    refl.addColorStop(0, "rgba(255,200,225,.20)");
     refl.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = refl;
     ctx.beginPath(); ctx.ellipse(cx, baseY + 10, baseR * 2.1, baseR * 0.5, 0, 0, Math.PI*2); ctx.fill();
 
     // 树光晕
     var halo = ctx.createRadialGradient(cx, (apexY+baseY)/2, 8, cx, (apexY+baseY)/2, baseR*1.65);
-    halo.addColorStop(0, "rgba(255,214,150,.18)");
+    halo.addColorStop(0, "rgba(255,170,210,.20)");
     halo.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = halo; ctx.fillRect(0,0,W,H);
 
@@ -886,7 +992,7 @@
   function syncSnd(){
     var on = musicWanted && (Music.isPlaying() || !everPlayed);
     sndBtn.classList.toggle("on", on);
-    sndLabel.textContent = (musicWanted ? "音乐" : "静音");
+    sndLabel.textContent = musicWanted ? "Music" : "Muted";
   }
   var everPlayed = false;
   syncSnd();
