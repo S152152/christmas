@@ -29,6 +29,20 @@
   .bottom{padding:0 16px clamp(16px,4vh,34px);text-align:center}
   .tip{font-size:clamp(11px,1.5vw,13px);color:#b3c3da;letter-spacing:.08em}
   .tip b{color:var(--gold);font-weight:600}
+  .snd{position:fixed;top:18px;right:18px;z-index:9;pointer-events:auto;cursor:pointer;
+      display:flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;
+      border:1px solid rgba(255,214,160,.34);background:rgba(12,16,28,.55);
+      color:#e8d8bd;font-size:12px;letter-spacing:.12em;backdrop-filter:blur(6px);
+      transition:border-color .25s,box-shadow .25s,color .25s}
+  .snd:hover{border-color:rgba(255,214,160,.7);box-shadow:0 0 18px rgba(255,190,120,.18)}
+  .snd.on{color:#ffd9a6;border-color:rgba(255,205,140,.75);box-shadow:0 0 22px rgba(255,190,120,.28)}
+  .snd .eq{display:inline-flex;gap:2px;align-items:flex-end;height:11px}
+  .snd .eq i{width:2px;background:currentColor;opacity:.75;border-radius:1px}
+  .snd.on .eq i{animation:eq .9s ease-in-out infinite}
+  .snd .eq i:nth-child(1){height:4px;animation-delay:0s}
+  .snd .eq i:nth-child(2){height:11px;animation-delay:.18s}
+  .snd .eq i:nth-child(3){height:7px;animation-delay:.36s}
+  @keyframes eq{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
   .brand{margin-top:8px;font-size:clamp(9px,1.05vw,11px);letter-spacing:.26em;color:#5d6f8c;text-transform:uppercase}
   @media (max-width:520px){ .top h1{letter-spacing:.04em} .top .sub{letter-spacing:.24em} }
 </style>
@@ -36,6 +50,9 @@
 <body>
 <canvas id="scene"></canvas>
 <div class="vignette"></div>
+<button class="snd" id="snd" aria-label="背景音乐">
+  <span class="eq"><i></i><i></i><i></i></span><span id="sndLabel">音乐</span>
+</button>
 
 <div class="hud">
   <div class="top">
@@ -45,7 +62,7 @@
   </div>
   <div class="bottom">
     <div class="tip" id="tip">点击这棵树，让它<b>绽放</b>，再从天而降拼合</div>
-    <div class="brand">Rockefeller Style &nbsp;·&nbsp; L.A. Edition v20</div>
+    <div class="brand">Rockefeller Style &nbsp;·&nbsp; L.A. Edition v21</div>
   </div>
 </div>
 
@@ -686,9 +703,184 @@
     requestAnimationFrame(frame);
   }
 
-  window.addEventListener("pointerdown", function(){
-    if (phase !== "bloom") bloom(performance.now());
+
+  /* ---------- 背景音乐（Web Audio 现场合成，无外部音频文件） ---------- */
+  /* 想换成自己的音频：把 AUDIO_SRC 填成同目录下的文件名或 URL，如 "last-christmas.mp3" */
+  var AUDIO_SRC = "";
+  var Music = (function(){
+    var ctxA = null, master = null, bellBus = null, padBus = null, noiseBuf = null;
+    var playing = false, timer = null, nextTime = 0, step = 0, tempo = 92;
+    var userOff = false;
+
+    // Jingle Bells 主旋律（公有领域），每拍一个音，0 表示空
+    var MELODY = [
+      "E4","E4","E4","0","E4","E4","E4","0","E4","G4","C4","D4","E4","0","0","0",
+      "F4","F4","F4","F4","F4","E4","E4","E4","E4","D4","D4","E4","D4","0","G4","0",
+      "E4","E4","E4","0","E4","E4","E4","0","E4","G4","C4","D4","E4","0","0","0",
+      "F4","F4","F4","F4","F4","E4","E4","E4","G4","G4","F4","D4","C4","0","0","0"
+    ];
+    var CHORDS = [
+      ["C3","E4","G4"], ["C3","E4","G4"], ["C3","E4","G4"], ["G2","B3","D4"],
+      ["C3","F3","A3"], ["C3","F3","A3"], ["G2","B3","D4"], ["G2","B3","D4"],
+      ["C3","E4","G4"], ["C3","E4","G4"], ["C3","E4","G4"], ["G2","B3","D4"],
+      ["C3","F3","A3"], ["C3","F3","A3"], ["G2","B3","D4"], ["C3","E4","G4"]
+    ];
+    var SEMI = {C:0,"C#":1,D:2,"D#":3,E:4,F:5,"F#":6,G:7,"G#":8,A:9,"A#":10,B:11};
+    function freq(n){
+      var m = /^([A-G]#?)(-?\d)$/.exec(n);
+      if (!m) return 0;
+      var midi = SEMI[m[1]] + (+m[2] + 1) * 12;
+      return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    function makeNoise(){
+      var len = ctxA.sampleRate * 0.25;
+      var buf = ctxA.createBuffer(1, len, ctxA.sampleRate);
+      var d = buf.getChannelData(0);
+      for (var i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4);
+      return buf;
+    }
+
+    function bell(t, f, gain){
+      var o1 = ctxA.createOscillator(), o2 = ctxA.createOscillator(), g = ctxA.createGain();
+      o1.type = "triangle"; o1.frequency.value = f;
+      o2.type = "sine"; o2.frequency.value = f * 2.01;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(gain, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.85);
+      o1.connect(g); o2.connect(g);
+      var o2g = ctxA.createGain(); o2g.gain.value = 0.28; o2.disconnect(); o2.connect(o2g); o2g.connect(g);
+      g.connect(bellBus);
+      o1.start(t); o2.start(t); o1.stop(t + 0.9); o2.stop(t + 0.9);
+    }
+
+    function pad(t, notes, dur){
+      notes.forEach(function(n){
+        var o = ctxA.createOscillator(), g = ctxA.createGain();
+        o.type = "sine"; o.frequency.value = freq(n);
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(0.035, t + 0.18);
+        g.gain.linearRampToValueAtTime(0.0001, t + dur);
+        o.connect(g); g.connect(padBus);
+        o.start(t); o.stop(t + dur + 0.05);
+      });
+    }
+
+    function sleigh(t, gain){
+      var src = ctxA.createBufferSource(); src.buffer = noiseBuf;
+      var bp = ctxA.createBiquadFilter(); bp.type = "bandpass";
+      bp.frequency.value = 5200; bp.Q.value = 1.4;
+      var g = ctxA.createGain();
+      g.gain.setValueAtTime(gain, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      src.connect(bp); bp.connect(g); g.connect(bellBus);
+      src.start(t);
+    }
+
+    function schedule(){
+      var beat = 60 / tempo;
+      while (nextTime < ctxA.currentTime + 0.18){
+        var idx = step % 64;
+        var m = MELODY[idx];
+        if (m) bell(nextTime, freq(m), 0.14);
+        if (idx % 4 === 0) pad(nextTime, CHORDS[Math.floor(idx / 4) % 16], beat * 4);
+        sleigh(nextTime, idx % 4 === 0 ? 0.16 : 0.07);
+        if (idx % 8 === 0) bell(nextTime, freq("C6"), 0.05);
+        nextTime += beat;
+        step++;
+      }
+    }
+
+    var extAudio = null, extTimer = null;
+    function startExternal(){
+      if (!extAudio){
+        extAudio = new Audio(AUDIO_SRC);
+        extAudio.loop = true; extAudio.volume = 0;
+        extAudio.crossOrigin = "anonymous";
+      }
+      var p = extAudio.play();
+      if (p && p.catch) p.catch(function(){});
+      clearInterval(extTimer);
+      extTimer = setInterval(function(){
+        if (!playing) { clearInterval(extTimer); return; }
+        if (extAudio.volume < 0.32) extAudio.volume = Math.min(0.32, extAudio.volume + 0.012);
+      }, 60);
+    }
+
+    function start(){
+      if (playing) return;
+      if (AUDIO_SRC){ playing = true; startExternal(); return; }
+      if (!ctxA){
+        var AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        ctxA = new AC();
+        master = ctxA.createGain(); master.gain.value = 0;
+        bellBus = ctxA.createGain(); bellBus.gain.value = 1;
+        padBus = ctxA.createGain(); padBus.gain.value = 1;
+        bellBus.connect(master); padBus.connect(master); master.connect(ctxA.destination);
+        noiseBuf = makeNoise();
+      }
+      if (ctxA.state === "suspended") ctxA.resume();
+      nextTime = ctxA.currentTime + 0.08; step = 0;
+      playing = true;
+      master.gain.cancelScheduledValues(ctxA.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctxA.currentTime);
+      master.gain.linearRampToValueAtTime(0.30, ctxA.currentTime + 1.8);
+      timer = setInterval(schedule, 40);
+    }
+
+    function stop(){
+      if (!playing) return;
+      playing = false;
+      clearInterval(timer); timer = null;
+      if (extAudio){
+        var a = extAudio; extAudio = null;
+        var v = a.volume, step = v / 14;
+        var fade = setInterval(function(){
+          v -= step;
+          if (v <= 0){ a.volume = 0; a.pause(); clearInterval(fade); return; }
+          a.volume = v;
+        }, 40);
+      }
+      if (master && ctxA){
+        master.gain.cancelScheduledValues(ctxA.currentTime);
+        master.gain.setValueAtTime(master.gain.value, ctxA.currentTime);
+        master.gain.linearRampToValueAtTime(0.0001, ctxA.currentTime + 0.7);
+      }
+    }
+
+    return {
+      toggle: function(){ playing ? stop() : start(); return playing; },
+      auto: function(){ start(); },
+      stop: stop
+    };
+  })();
+
+  /* ---- 音乐按钮 ---- */
+  var sndBtn = document.getElementById("snd");
+  var sndLabel = document.getElementById("sndLabel");
+  var musicWanted = true;
+  try { if (localStorage.getItem("christmas_bgm") === "off") musicWanted = false; } catch(e){}
+  function syncSnd(){
+    var on = musicWanted;
+    sndBtn.classList.toggle("on", on);
+    sndLabel.textContent = on ? "音乐" : "静音";
+  }
+  syncSnd();
+  sndBtn.addEventListener("click", function(ev){
+    ev.stopPropagation();
+    musicWanted = !musicWanted;
+    if (musicWanted) Music.auto(); else Music.stop();
+    try { localStorage.setItem("christmas_bgm", musicWanted ? "on" : "off"); } catch(e){}
+    syncSnd();
   });
+
+  var firstGesture = true;
+  window.addEventListener("pointerdown", function(ev){
+    if (ev.target && ev.target.closest && ev.target.closest("#snd")) return;
+    if (firstGesture){ firstGesture = false; if (musicWanted) Music.auto(); }
+    if (phase !== "bloom") bloom(performance.now());
+  }, true);
   window.addEventListener("resize", layout);
   window.addEventListener("orientationchange", function(){ setTimeout(layout, 180); });
 
